@@ -1,4 +1,8 @@
+import { usePostHog } from '@posthog/react'
+
 export function Footer() {
+  const posthog = usePostHog()
+
   return (
     <div className="wrap">
       <footer>
@@ -17,12 +21,27 @@ export function Footer() {
           </div>
           <div className="footer-col">
             <h4>Build</h4>
-            <a href="https://github.com/sigil-oss/sigil.app" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://github.com/sigil-oss/sigil.app/releases" target="_blank" rel="noopener noreferrer">Changelog</a>
+            <a
+              href="https://github.com/sigil-oss/sigil.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => posthog.capture('source_code_clicked', { location: 'footer', link: 'github' })}
+            >GitHub</a>
+            <a
+              href="https://github.com/sigil-oss/sigil.app/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => posthog.capture('source_code_clicked', { location: 'footer', link: 'changelog' })}
+            >Changelog</a>
           </div>
           <div className="footer-col">
             <h4>Brand</h4>
-            <a href="https://github.com/sigil-oss/sigil.app" target="_blank" rel="noopener noreferrer">Press kit</a>
+            <a
+              href="https://github.com/sigil-oss/sigil.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => posthog.capture('source_code_clicked', { location: 'footer', link: 'press_kit' })}
+            >Press kit</a>
           </div>
         </div>
         <div className="footer-bottom">

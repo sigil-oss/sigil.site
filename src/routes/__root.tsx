@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { PostHogProvider } from '@posthog/react'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
@@ -62,7 +63,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <PostHogProvider
+          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN || ''}
+          options={{
+            api_host: '/ingest',
+            ui_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.posthog.com',
+            defaults: '2025-05-24',
+            capture_exceptions: true,
+            debug: import.meta.env.DEV,
+          }}
+        >
+          {children}
+        </PostHogProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

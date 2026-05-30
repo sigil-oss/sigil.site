@@ -1,4 +1,8 @@
+import { usePostHog } from '@posthog/react'
+
 export function Hero() {
+  const posthog = usePostHog()
+
   return (
     <div className="wrap">
       <header className="hero">
@@ -23,11 +27,21 @@ export function Hero() {
               No analytics company watching your balance. Just you and your keys.
             </p>
             <div className="hero-actions">
-              <a className="btn primary" href="#download">
+              <a
+                className="btn primary"
+                href="#download"
+                onClick={() => posthog.capture('hero_cta_clicked', { location: 'hero' })}
+              >
                 <span>Download free</span>
                 <span className="arrow">→</span>
               </a>
-              <a className="btn secondary" href="https://github.com/sigil-oss/sigil.app" target="_blank" rel="noopener noreferrer">
+              <a
+                className="btn secondary"
+                href="https://github.com/sigil-oss/sigil.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => posthog.capture('source_code_clicked', { location: 'hero' })}
+              >
                 <span>View source</span>
               </a>
             </div>

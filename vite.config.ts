@@ -11,6 +11,28 @@ import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  server: {
+    proxy: {
+      '/ingest/static': {
+        target: 'https://us-assets.i.posthog.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ingest/, ''),
+        secure: false,
+      },
+      '/ingest/array': {
+        target: 'https://us-assets.i.posthog.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ingest/, ''),
+        secure: false,
+      },
+      '/ingest': {
+        target: 'https://us.i.posthog.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ingest/, ''),
+        secure: false,
+      },
+    },
+  },
   plugins: [
     devtools(),
     paraglideVitePlugin({
