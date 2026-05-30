@@ -22,6 +22,10 @@ const NAV: NavSection[] = [
 		links: [{ to: "/docs/sdk", label: "@sigil-oss/connect" }],
 	},
 	{
+		section: "[ GUIDES ]",
+		links: [{ to: "/docs/react", label: "React" }],
+	},
+	{
 		section: "[ MORE ]",
 		links: [{ to: "/docs/reference", label: "Errors & examples" }],
 	},

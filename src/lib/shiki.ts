@@ -6,6 +6,7 @@ import {
 
 const LANGS: BundledLanguage[] = [
 	"typescript",
+	"tsx",
 	"javascript",
 	"json",
 	"bash",

@@ -4,59 +4,53 @@ import { hl } from "#/lib/shiki";
 
 const INSTALL = `npm install @sigil-oss/connect`;
 
-const REDIRECT_URI = `import { buildUri } from '@sigil-oss/connect';
+const REDIRECT_URI = `import { sigilRequest, createSignMessageRequest } from '@sigil-oss/connect';
 
-// No server needed — result comes back as a query param
-const uri = buildUri({
-  request: {
+// One await — no server, no redirect boilerplate.
+// Sigil opens /__sigil__ after the user acts; handleRedirect() there
+// broadcasts the result back and this Promise resolves.
+const result = await sigilRequest(
+  createSignMessageRequest({
     type: 'sign_message',
-    nonce: sessionStorage.getItem('pending_nonce') ?? crypto.randomUUID(),
     dapp: { name: 'My App', origin: 'https://myapp.example' },
     message: 'Sign in to My App · ' + new Date().toISOString(),
-  },
-  redirect_uri: 'https://myapp.example/signed', // Sigil opens this after the user acts
-});
+  }),
+);
 
-window.location.href = uri;
-
-// On https://myapp.example/signed:
-function handleRedirect() {
-  const encoded = new URLSearchParams(location.search).get('result');
-  if (!encoded) return;
-  const result = JSON.parse(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')));
-  // result.status === 'signed' | 'rejected'
-  // result.nonce — verify against what you stored before navigating away
-  console.log(result);
+if (result.status === 'signed') {
+  console.log('identity:', result.identity);
 }`;
 
-const BUILD_URI = `import { buildUri } from '@sigil-oss/connect';
+const BUILD_URI = `import { buildSigilUrl, createEnvelope, createConnectRequest } from '@sigil-oss/connect';
 
-const uri = buildUri({
-  request: {
-    type: 'connect',
-    nonce: crypto.randomUUID(),
-    dapp: { name: 'My App', origin: 'https://myapp.example' },
-    permissions: ['transfer', 'sign_message'],
-  },
-  callback: 'https://myapp.example/api/sigil/callback',
-});
+const url = buildSigilUrl(
+  createEnvelope(
+    createConnectRequest({
+      type: 'connect',
+      dapp: { name: 'My App', origin: 'https://myapp.example' },
+      permissions: ['transfer', 'sign_message'],
+    }),
+    { callback: 'https://myapp.example/api/sigil/callback' },
+  )
+);
 
-window.location.href = uri;`;
+window.location.href = url;`;
 
-const TRANSFER_URI = `import { buildUri } from '@sigil-oss/connect';
+const TRANSFER_URI = `import { buildSigilUrl, createEnvelope, createTransferRequest } from '@sigil-oss/connect';
 
-const uri = buildUri({
-  request: {
-    type: 'transfer',
-    nonce: crypto.randomUUID(),
-    dapp: { name: 'My App', origin: 'https://myapp.example' },
-    to: 'NQZBXKZP4MTLDUVWXYZK8MFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    amount: 1_500_000,
-  },
-  callback: 'https://myapp.example/api/sigil/callback',
-});
+const url = buildSigilUrl(
+  createEnvelope(
+    createTransferRequest({
+      type: 'transfer',
+      dapp: { name: 'My App', origin: 'https://myapp.example' },
+      to: 'NQZBXKZP4MTLDUVWXYZK8MFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      amount: 1_500_000,
+    }),
+    { callback: 'https://myapp.example/api/sigil/callback' },
+  )
+);
 
-window.location.href = uri;`;
+window.location.href = url;`;
 
 const PARSE_CALLBACK = `import { parseCallback, type SigilResult } from '@sigil-oss/connect';
 
@@ -197,7 +191,7 @@ function SdkPage() {
 
 			<h2 id="connect">Connect request</h2>
 			<p>
-				<code className="inline">buildUri</code> wraps the request in an
+				<code className="inline">buildSigilUrl</code> wraps the request in an
 				envelope, base64url-encodes it, and returns a{" "}
 				<code className="inline">sigil://v1/request?d=…</code> URI ready to
 				open.

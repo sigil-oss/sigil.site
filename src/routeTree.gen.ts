@@ -18,6 +18,7 @@ import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsSdkRouteImport } from './routes/docs/sdk'
 import { Route as DocsRequestTypesRouteImport } from './routes/docs/request-types'
 import { Route as DocsReferenceRouteImport } from './routes/docs/reference'
+import { Route as DocsReactRouteImport } from './routes/docs/react'
 import { Route as DocsPayloadRouteImport } from './routes/docs/payload'
 
 const SponsorsRoute = SponsorsRouteImport.update({
@@ -65,6 +66,11 @@ const DocsReferenceRoute = DocsReferenceRouteImport.update({
   path: '/reference',
   getParentRoute: () => DocsRoute,
 } as any)
+const DocsReactRoute = DocsReactRouteImport.update({
+  id: '/react',
+  path: '/react',
+  getParentRoute: () => DocsRoute,
+} as any)
 const DocsPayloadRoute = DocsPayloadRouteImport.update({
   id: '/payload',
   path: '/payload',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/download': typeof DownloadRoute
   '/sponsors': typeof SponsorsRoute
   '/docs/payload': typeof DocsPayloadRoute
+  '/docs/react': typeof DocsReactRoute
   '/docs/reference': typeof DocsReferenceRoute
   '/docs/request-types': typeof DocsRequestTypesRoute
   '/docs/sdk': typeof DocsSdkRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/download': typeof DownloadRoute
   '/sponsors': typeof SponsorsRoute
   '/docs/payload': typeof DocsPayloadRoute
+  '/docs/react': typeof DocsReactRoute
   '/docs/reference': typeof DocsReferenceRoute
   '/docs/request-types': typeof DocsRequestTypesRoute
   '/docs/sdk': typeof DocsSdkRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/download': typeof DownloadRoute
   '/sponsors': typeof SponsorsRoute
   '/docs/payload': typeof DocsPayloadRoute
+  '/docs/react': typeof DocsReactRoute
   '/docs/reference': typeof DocsReferenceRoute
   '/docs/request-types': typeof DocsRequestTypesRoute
   '/docs/sdk': typeof DocsSdkRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/sponsors'
     | '/docs/payload'
+    | '/docs/react'
     | '/docs/reference'
     | '/docs/request-types'
     | '/docs/sdk'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/sponsors'
     | '/docs/payload'
+    | '/docs/react'
     | '/docs/reference'
     | '/docs/request-types'
     | '/docs/sdk'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/sponsors'
     | '/docs/payload'
+    | '/docs/react'
     | '/docs/reference'
     | '/docs/request-types'
     | '/docs/sdk'
@@ -218,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsReferenceRouteImport
       parentRoute: typeof DocsRoute
     }
+    '/docs/react': {
+      id: '/docs/react'
+      path: '/react'
+      fullPath: '/docs/react'
+      preLoaderRoute: typeof DocsReactRouteImport
+      parentRoute: typeof DocsRoute
+    }
     '/docs/payload': {
       id: '/docs/payload'
       path: '/payload'
@@ -230,6 +249,7 @@ declare module '@tanstack/react-router' {
 
 interface DocsRouteChildren {
   DocsPayloadRoute: typeof DocsPayloadRoute
+  DocsReactRoute: typeof DocsReactRoute
   DocsReferenceRoute: typeof DocsReferenceRoute
   DocsRequestTypesRoute: typeof DocsRequestTypesRoute
   DocsSdkRoute: typeof DocsSdkRoute
@@ -238,6 +258,7 @@ interface DocsRouteChildren {
 
 const DocsRouteChildren: DocsRouteChildren = {
   DocsPayloadRoute: DocsPayloadRoute,
+  DocsReactRoute: DocsReactRoute,
   DocsReferenceRoute: DocsReferenceRoute,
   DocsRequestTypesRoute: DocsRequestTypesRoute,
   DocsSdkRoute: DocsSdkRoute,
