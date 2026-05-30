@@ -3,9 +3,9 @@ export function Stats() {
 		<div className="stats">
 			<div className="stat">
 				<div className="v">
-					YOURS<span className="sub">ENTIRELY</span>
+					sigil://<span className="sub">PROTOCOL</span>
 				</div>
-				<div className="l">KEYS STAY ON YOUR DEVICE</div>
+				<div className="l">DEEP-LINK INTEGRATION</div>
 			</div>
 			<div className="stat">
 				<div className="v">
@@ -21,9 +21,9 @@ export function Stats() {
 			</div>
 			<div className="stat">
 				<div className="v">
-					0<span className="sub">SIGNUPS</span>
+					5<span className="sub">TYPES</span>
 				</div>
-				<div className="l">NO ACCOUNTS, NO EMAILS</div>
+				<div className="l">REQUEST TYPES SUPPORTED</div>
 			</div>
 		</div>
 	);

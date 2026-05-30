@@ -19,12 +19,12 @@ export function Hero() {
 							<span className="signature">desktop wallet.</span>
 						</h1>
 						<p className="hero-tag">
-							Sigil is a native app for Qubic.{" "}
+							A native desktop wallet for Qubic.{" "}
 							<strong>
-								Send, receive, stake with Qearn, and sign contract calls
+								Transfers, Qearn staking, contract calls, and message signing
 							</strong>{" "}
-							— plus a deep-link protocol so any web app can request your
-							approval.
+							— with a <code>sigil://</code> protocol that lets any web app
+							request your signature in one step.
 						</p>
 						<div className="hero-actions">
 							<Link
@@ -50,9 +50,9 @@ export function Hero() {
 							</a>
 						</div>
 						<div className="hero-byline">
-							<span>OPEN SOURCE</span>
+							<span>NATIVE</span>
 							<span className="dot" />
-							<span>MIT</span>
+							<span>CROSS-PLATFORM</span>
 							<span className="dot" />
 							<span>BUILT FOR QUBIC</span>
 						</div>
@@ -191,9 +191,9 @@ export function Hero() {
 						</div>
 					</div>
 					<div className="cell">
-						<div className="label">LICENSE</div>
+						<div className="label">SIGNING</div>
 						<div className="val">
-							OPEN<span className="sub">/ SOURCE / MIT</span>
+							ES256<span className="sub">/ VERIFIED</span>
 						</div>
 					</div>
 				</div>
