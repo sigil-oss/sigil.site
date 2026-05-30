@@ -19,7 +19,7 @@ export function Nav() {
           <a href="/#security" onClick={() => track('security')}>Trust</a>
           <Link to="/docs" onClick={() => track('docs')}>Docs</Link>
           <Link to="/brand" onClick={() => track('brand')}>Brand</Link>
-          <a href="/#download" className="cta" onClick={() => track('download')}>Download</a>
+          <Link to="/download" className="cta" onClick={() => track('download')}>Download</Link>
         </div>
       </div>
     </nav>

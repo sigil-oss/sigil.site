@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { usePostHog } from '@posthog/react'
 
 export function Hero() {
@@ -21,20 +22,15 @@ export function Hero() {
               <strong>nobody else's servers, nobody else's accounts</strong>.
               Open it when you need to send, sign, or stake. Close it when you don't.
             </p>
-            <p className="hero-handwritten">
-              We built Sigil because we wanted a wallet that respects you.
-              No popups asking for your email. No "premium" tier behind a paywall.
-              No analytics company watching your balance. Just you and your keys.
-            </p>
             <div className="hero-actions">
-              <a
+              <Link
                 className="btn primary"
-                href="#download"
+                to="/download"
                 onClick={() => posthog.capture('hero_cta_clicked', { location: 'hero' })}
               >
                 <span>Download free</span>
                 <span className="arrow">→</span>
-              </a>
+              </Link>
               <a
                 className="btn secondary"
                 href="https://github.com/sigil-oss/sigil.app"
@@ -57,22 +53,14 @@ export function Hero() {
           <div className="hero-visual" aria-hidden="true">
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
               <g fill="var(--text-disabled)" opacity="0.18">
-                <circle cx="192" cy="352" r="3"/>
-                <circle cx="352" cy="192" r="3"/>
-                <circle cx="512" cy="192" r="3"/>
-                <circle cx="672" cy="192" r="3"/>
-                <circle cx="832" cy="192" r="3"/>
-                <circle cx="192" cy="512" r="3"/>
-                <circle cx="832" cy="352" r="3"/>
-                <circle cx="352" cy="512" r="3"/>
-                <circle cx="832" cy="512" r="3"/>
-                <circle cx="192" cy="672" r="3"/>
-                <circle cx="352" cy="672" r="3"/>
-                <circle cx="512" cy="672" r="3"/>
-                <circle cx="832" cy="672" r="3"/>
-                <circle cx="192" cy="832" r="3"/>
-                <circle cx="352" cy="832" r="3"/>
-                <circle cx="512" cy="832" r="3"/>
+                <circle cx="192" cy="352" r="3"/><circle cx="352" cy="192" r="3"/>
+                <circle cx="512" cy="192" r="3"/><circle cx="672" cy="192" r="3"/>
+                <circle cx="832" cy="192" r="3"/><circle cx="192" cy="512" r="3"/>
+                <circle cx="832" cy="352" r="3"/><circle cx="352" cy="512" r="3"/>
+                <circle cx="832" cy="512" r="3"/><circle cx="192" cy="672" r="3"/>
+                <circle cx="352" cy="672" r="3"/><circle cx="512" cy="672" r="3"/>
+                <circle cx="832" cy="672" r="3"/><circle cx="192" cy="832" r="3"/>
+                <circle cx="352" cy="832" r="3"/><circle cx="512" cy="832" r="3"/>
                 <circle cx="672" cy="832" r="3"/>
               </g>
               <g fill="var(--text-display)">
@@ -87,11 +75,6 @@ export function Hero() {
               <rect className="cell key-cell" x="442" y="442" width="140" height="140" rx="24" ry="24"
                     fill="var(--error)" style={{ animationDelay: '400ms' }}/>
             </svg>
-            <div className="annotations">
-              <div className="annot right" style={{ top: '38%' }}>KEY · YOURS</div>
-              <div className="annot left" style={{ top: '12%' }}>A WALLET</div>
-              <div className="annot left" style={{ bottom: '12%' }}>A SIGNATURE</div>
-            </div>
           </div>
         </div>
 
