@@ -141,10 +141,6 @@ nav {
   font-weight: 500; font-style: italic;
   color: var(--text-display); position: relative;
 }
-.hero-title .signature::after {
-  content: ''; display: block; width: 100%; height: 2px;
-  background: var(--text-display); margin-top: -8px; opacity: 0.18;
-}
 .hero-tag {
   font-size: 20px; max-width: 540px; line-height: 1.5;
   color: var(--text-secondary); margin: 0 0 32px;
@@ -813,16 +809,50 @@ footer { padding: 80px 0 48px; border-top: 1px solid var(--border-subtle); }
   }
 }
 
-.docs-shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+.docs-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
 .docs-aside {
   border-right: 1px solid var(--border-subtle);
   position: sticky; top: 0; height: 100vh; overflow-y: auto;
   padding: 32px 24px; background: var(--bg);
 }
-.docs-main { padding: 0; }
-@media (max-width: 1100px) {
+.docs-main { display: flex; flex-direction: column; min-width: 0; }
+.docs-body {
+  display: grid; grid-template-columns: 1fr 220px;
+  align-items: start; flex: 1;
+}
+@media (max-width: 1280px) {
+  .docs-body { grid-template-columns: 1fr; }
+  .docs-toc { display: none; }
+}
+@media (max-width: 1000px) {
   .docs-shell { grid-template-columns: 1fr; }
   .docs-aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); }
+}
+@media (max-width: 720px) {
+  .docs-topbar { padding: 14px 20px; }
+  .docs-aside {
+    padding: 0 16px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; border-bottom: 1px solid var(--border-subtle);
+  }
+  .docs-aside::-webkit-scrollbar { display: none; }
+  .docs-brand { display: none; }
+  .docs-nav { display: flex; flex-direction: row; align-items: center; gap: 4px; padding: 12px 0; white-space: nowrap; }
+  .docs-nav > div { display: contents; }
+  .docs-nav-section { display: none; }
+  .docs-nav a, .docs-nav-link {
+    padding: 6px 12px; border-radius: 999px; flex-shrink: 0;
+    border: 1px solid var(--border-subtle); font-size: 11px;
+  }
+  .docs-nav a:hover, .docs-nav a.active,
+  .docs-nav-link:hover, .docs-nav-link.active {
+    background: var(--subtle); border-color: var(--border-strong); color: var(--text-display);
+  }
+}
+@media (max-width: 480px) {
+  .docs-content { padding: 24px 16px 64px; }
+  .docs-topbar { padding: 12px 16px; }
+  .docs-topbar .docs-topbar-label { display: none; }
 }
 
 .docs-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-bottom: 32px; }
@@ -872,8 +902,32 @@ footer { padding: 80px 0 48px; border-top: 1px solid var(--border-subtle); }
 }
 .docs-topbar a:hover { background: var(--subtle); }
 
-.docs-content { max-width: 880px; padding: 64px 64px 120px; }
-@media (max-width: 720px) { .docs-content { padding: 40px 32px 80px; } }
+.docs-toc {
+  padding: 48px 24px 48px 16px;
+  position: sticky; top: 61px;
+  max-height: calc(100vh - 61px); overflow-y: auto;
+}
+.docs-toc-label {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 16px;
+}
+.docs-toc-link {
+  display: block; font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--text-secondary); text-decoration: none;
+  padding: 5px 0; line-height: 1.4;
+  border-left: 2px solid transparent;
+  padding-left: 12px; margin-left: -12px;
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+.docs-toc-link:hover { color: var(--text-primary); }
+.docs-toc-link.active { color: var(--text-display); border-left-color: var(--text-display); }
+.docs-toc-link.sub { padding-left: 24px; margin-left: -12px; font-size: 10px; }
+
+
+
+.docs-content { padding: 64px 48px 120px; }
+@media (max-width: 720px) { .docs-content { padding: 40px 28px 80px; } }
 @media (max-width: 480px) { .docs-content { padding: 24px 16px 64px; } }
 
 .docs-content h1 {
@@ -915,19 +969,33 @@ a.doc-link {
 }
 a.doc-link:hover { border-color: var(--text-display); }
 
-pre.doc-pre {
+.doc-pre {
   background: var(--code-bg); color: var(--code-text);
   border: 1px solid var(--border-strong); border-radius: 8px;
   padding: 20px 24px; margin: 16px 0 24px;
   overflow-x: auto; -webkit-overflow-scrolling: touch;
-  font-family: 'Space Mono', monospace; font-size: 13px; line-height: 1.6;
+  font-family: 'Space Mono', monospace; font-size: 13px; line-height: 1.5;
 }
-@media (max-width: 480px) { pre.doc-pre { font-size: 11px; padding: 14px 16px; } }
-pre.doc-pre .pre-label {
-  display: block; font-size: 9px; letter-spacing: 0.22em;
+@media (max-width: 480px) { .doc-pre { font-size: 11px; padding: 14px 16px; } }
+.pre-header {
+  display: flex; align-items: center; margin-bottom: 12px;
+}
+.doc-pre .pre-label {
+  font-size: 9px; letter-spacing: 0.22em;
   color: var(--text-secondary); text-transform: uppercase;
-  margin-bottom: 12px; user-select: none;
+  user-select: none;
 }
+.pre-copy {
+  margin-left: auto; flex-shrink: 0;
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-secondary); background: transparent;
+  border: 1px solid var(--border-strong); border-radius: 3px;
+  padding: 2px 8px; cursor: pointer; line-height: 1.6;
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+.pre-copy:hover { color: var(--text-display); }
+.pre-copy.copied { color: var(--success); border-color: var(--success); }
 .t-key { color: var(--token-key); }
 .t-str { color: var(--token-str); }
 .t-num { color: var(--token-num); }
@@ -1469,7 +1537,17 @@ ul.brief li::after  { content: ']'; color: var(--text-secondary); margin-left: 6
 .sp-empty-identicons { display: flex; gap: 12px; margin-bottom: 24px; }
 
 /* ========== Shiki code highlighting ========== */
-.doc-pre .shiki { background: transparent !important; }
-.doc-pre .shiki code { background: transparent; font-family: 'Space Mono', monospace; font-size: inherit; }
-.doc-pre .shiki .line { display: block; }
+.doc-pre .shiki { background: transparent !important; margin: 0; padding: 0; }
+.doc-pre .shiki code {
+  display: block; background: transparent;
+  font-family: 'Space Mono', monospace; font-size: inherit;
+  line-height: 1.45;
+  white-space: normal; /* collapse \n text nodes between .line blocks */
+}
+.doc-pre .shiki .line { display: block; white-space: pre; }
 .doc-pre .shiki .line:last-child:empty { display: none; }
+/* Dual-theme token colors via shiki CSS variables */
+.doc-pre .shiki span { color: var(--shiki-light); }
+@media (prefers-color-scheme: dark) {
+  .doc-pre .shiki span { color: var(--shiki-dark); }
+}

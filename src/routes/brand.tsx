@@ -435,7 +435,7 @@ function BrandPage() {
 									{type} — {desc}
 								</span>
 								<a href={path} download>
-									{type === "DIR" ? "OPEN" : "SAVE"}
+									SAVE
 								</a>
 							</div>
 						))}
