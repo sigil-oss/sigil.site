@@ -9,6 +9,7 @@ import { defineConfig } from "vite";
 
 const config = defineConfig({
 	resolve: { tsconfigPaths: true },
+	build: { sourcemap: false },
 	server: {
 		proxy: {
 			"/ingest/static": {
