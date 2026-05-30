@@ -135,14 +135,65 @@ function PayloadPage() {
 			</p>
 			<CodeBlock html={encodeFnHtml} label="TYPESCRIPT" />
 
-			<h2 id="callback">Receiving the result</h2>
+			<h2 id="delivery">Receiving the result</h2>
+			<p>
+				Two delivery modes are available. Set one or both in the envelope — they
+				are independent and can be combined.
+			</p>
+			<div className="fields-wrap">
+				<table className="fields">
+					<thead>
+						<tr>
+							<th>Field</th>
+							<th>How it works</th>
+							<th>Best for</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<code className="inline">callback</code>
+							</td>
+							<td>
+								Sigil POSTs the result as JSON from the Rust layer after the
+								user acts
+							</td>
+							<td>
+								Apps with a server — production dApps, anything that handles
+								money or needs server-side nonce verification
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code className="inline">redirect_uri</code>
+							</td>
+							<td>
+								Sigil opens{" "}
+								<code className="inline">
+									redirect_uri?result=&lt;base64url JSON&gt;
+								</code>{" "}
+								in the default browser after the user acts
+							</td>
+							<td>
+								Static sites, SPAs, and tools with no server — read{" "}
+								<code className="inline">
+									new URLSearchParams(location.search).get("result")
+								</code>{" "}
+								client-side
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<h3 id="callback">callback — server POST</h3>
 			<p>
 				Sigil POSTs a JSON body to your callback URL from the Rust layer. If
 				delivery fails, the result stays recoverable in request history for
 				retry, JSON export, or clipboard copy.
 			</p>
 
-			<h3>Constraints on the callback URL</h3>
+			<h4>Constraints</h4>
 			<ul className="brief">
 				<li>
 					Must be <code className="inline">https://</code> in production
@@ -155,8 +206,35 @@ function PayloadPage() {
 				<li>Private / loopback addresses are blocked (except localhost)</li>
 			</ul>
 
+			<h3 id="redirect-uri">redirect_uri — client redirect</h3>
+			<p>
+				Sigil opens{" "}
+				<code className="inline">redirect_uri?result=&lt;value&gt;</code> in the
+				browser after the user acts. The <code className="inline">result</code>{" "}
+				query parameter is the same JSON response body as the POST callback,
+				base64url-encoded (no padding). Read it client-side — no server
+				required.
+			</p>
+			<ul className="brief">
+				<li>
+					Same URL constraints as <code className="inline">callback</code>:
+					HTTPS in production, localhost HTTP for dev
+				</li>
+				<li>
+					The result is visible in the browser URL bar and history — do not use
+					for high-value transactions where the signed result must stay private
+				</li>
+				<li>
+					Reject responses are also delivered via redirect so the dApp can
+					handle both outcomes
+				</li>
+			</ul>
+
 			<h3>If the user rejects</h3>
-			<CodeBlock html={rejectCbHtml} label="POST ‹your cb URL›" />
+			<CodeBlock
+				html={rejectCbHtml}
+				label="POST ‹callback› or ?result= ‹redirect_uri›"
+			/>
 
 			<div className="callout warn">
 				<div className="callout-tag">[ ALWAYS VERIFY THE NONCE ]</div>

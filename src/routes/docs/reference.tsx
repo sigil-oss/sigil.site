@@ -77,6 +77,43 @@ const envelope = {
 const uri = 'sigil://v1/request?d=' + b64url(JSON.stringify(envelope));
 window.location.href = uri;`;
 
+const REDIRECT_EXAMPLE = `// Static site / SPA — no server required
+function b64url(str: string): string {
+  return btoa(str).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+}
+
+// 1. Build the request, store nonce for verification after redirect
+const nonce = crypto.randomUUID();
+sessionStorage.setItem('sigil_nonce', nonce);
+
+const envelope = {
+  request: {
+    type: 'sign_message',
+    nonce,
+    dapp: { name: 'Acme', origin: 'https://acme.example' },
+    message: 'Sign in to Acme · ' + new Date().toISOString(),
+  },
+  redirect_uri: 'https://acme.example/signed', // Sigil opens this when done
+};
+
+window.location.href = 'sigil://v1/request?d=' + b64url(JSON.stringify(envelope));
+
+// 2. On https://acme.example/signed — parse the result
+const encoded = new URLSearchParams(location.search).get('result');
+if (encoded) {
+  const result = JSON.parse(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')));
+  const storedNonce = sessionStorage.getItem('sigil_nonce');
+
+  if (result.nonce !== storedNonce) throw new Error('nonce mismatch');
+
+  if (result.status === 'signed') {
+    console.log('Signed by:', result.identity);
+    console.log('Signature:', result.signature);
+  } else {
+    console.log('Rejected:', result.reason);
+  }
+}`;
+
 export const Route = createFileRoute("/docs/reference")({
 	head: () => ({
 		meta: [
@@ -89,32 +126,54 @@ export const Route = createFileRoute("/docs/reference")({
 		],
 	}),
 	loader: async () => {
-		const [fullExampleHtml, callbackHtml, manualBuildHtml] = await Promise.all([
+		const [
+			fullExampleHtml,
+			callbackHtml,
+			redirectExampleHtml,
+			manualBuildHtml,
+		] = await Promise.all([
 			hl(FULL_EXAMPLE, "typescript"),
 			hl(CALLBACK_VERIFY, "typescript"),
+			hl(REDIRECT_EXAMPLE, "typescript"),
 			hl(MANUAL_BUILD, "typescript"),
 		]);
-		return { fullExampleHtml, callbackHtml, manualBuildHtml };
+		return {
+			fullExampleHtml,
+			callbackHtml,
+			redirectExampleHtml,
+			manualBuildHtml,
+		};
 	},
 	component: ReferencePage,
 });
 
 function ReferencePage() {
-	const { fullExampleHtml, callbackHtml, manualBuildHtml } =
-		Route.useLoaderData();
+	const {
+		fullExampleHtml,
+		callbackHtml,
+		redirectExampleHtml,
+		manualBuildHtml,
+	} = Route.useLoaderData();
 
 	return (
 		<div className="docs-content">
 			<div className="docs-eyebrow">[ REFERENCE ]</div>
 			<h1>Errors &amp; examples</h1>
 
-			<h2 id="example">Complete example</h2>
+			<h2 id="example">Server callback example</h2>
 			<p>
 				A transfer request from start to finish — build the URI, hand off to
-				Sigil, handle the callback.
+				Sigil, receive the result via server POST.
 			</p>
 			<CodeBlock html={fullExampleHtml} label="CLIENT (TYPESCRIPT)" />
 			<CodeBlock html={callbackHtml} label="SERVER CALLBACK (TYPESCRIPT)" />
+
+			<h2 id="redirect-example">Redirect URI example</h2>
+			<p>
+				Static site or SPA with no server — result delivered as a query
+				parameter when Sigil redirects the browser back to your page.
+			</p>
+			<CodeBlock html={redirectExampleHtml} label="TYPESCRIPT (CLIENT-ONLY)" />
 
 			<h2 id="rejection-reasons">Rejection reasons</h2>
 			<div className="fields-wrap">

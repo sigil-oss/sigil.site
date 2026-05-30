@@ -4,6 +4,31 @@ import { hl } from "#/lib/shiki";
 
 const INSTALL = `npm install @sigil-oss/connect`;
 
+const REDIRECT_URI = `import { buildUri } from '@sigil-oss/connect';
+
+// No server needed — result comes back as a query param
+const uri = buildUri({
+  request: {
+    type: 'sign_message',
+    nonce: sessionStorage.getItem('pending_nonce') ?? crypto.randomUUID(),
+    dapp: { name: 'My App', origin: 'https://myapp.example' },
+    message: 'Sign in to My App · ' + new Date().toISOString(),
+  },
+  redirect_uri: 'https://myapp.example/signed', // Sigil opens this after the user acts
+});
+
+window.location.href = uri;
+
+// On https://myapp.example/signed:
+function handleRedirect() {
+  const encoded = new URLSearchParams(location.search).get('result');
+  if (!encoded) return;
+  const result = JSON.parse(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')));
+  // result.status === 'signed' | 'rejected'
+  // result.nonce — verify against what you stored before navigating away
+  console.log(result);
+}`;
+
 const BUILD_URI = `import { buildUri } from '@sigil-oss/connect';
 
 const uri = buildUri({
@@ -86,22 +111,42 @@ export const Route = createFileRoute("/docs/sdk")({
 		],
 	}),
 	loader: async () => {
-		const [installHtml, buildUriHtml, transferHtml, parseHtml, signedHtml] =
-			await Promise.all([
-				hl(INSTALL, "bash"),
-				hl(BUILD_URI, "typescript"),
-				hl(TRANSFER_URI, "typescript"),
-				hl(PARSE_CALLBACK, "typescript"),
-				hl(SIGNED_KEY, "typescript"),
-			]);
-		return { installHtml, buildUriHtml, transferHtml, parseHtml, signedHtml };
+		const [
+			installHtml,
+			buildUriHtml,
+			transferHtml,
+			redirectUriHtml,
+			parseHtml,
+			signedHtml,
+		] = await Promise.all([
+			hl(INSTALL, "bash"),
+			hl(BUILD_URI, "typescript"),
+			hl(TRANSFER_URI, "typescript"),
+			hl(REDIRECT_URI, "typescript"),
+			hl(PARSE_CALLBACK, "typescript"),
+			hl(SIGNED_KEY, "typescript"),
+		]);
+		return {
+			installHtml,
+			buildUriHtml,
+			transferHtml,
+			redirectUriHtml,
+			parseHtml,
+			signedHtml,
+		};
 	},
 	component: SdkPage,
 });
 
 function SdkPage() {
-	const { installHtml, buildUriHtml, transferHtml, parseHtml, signedHtml } =
-		Route.useLoaderData();
+	const {
+		installHtml,
+		buildUriHtml,
+		transferHtml,
+		redirectUriHtml,
+		parseHtml,
+		signedHtml,
+	} = Route.useLoaderData();
 
 	return (
 		<div className="docs-content">
@@ -150,7 +195,30 @@ function SdkPage() {
 			<h2 id="transfer">Transfer request</h2>
 			<CodeBlock html={transferHtml} label="TYPESCRIPT" />
 
-			<h2 id="callback">Parsing the callback</h2>
+			<h2 id="redirect-uri">Redirect URI — no server needed</h2>
+			<p>
+				Pass <code className="inline">redirect_uri</code> instead of (or
+				alongside) <code className="inline">callback</code>. After the user
+				acts, Sigil opens{" "}
+				<code className="inline">
+					redirect_uri?result=&lt;base64url JSON&gt;
+				</code>{" "}
+				in the default browser. Read the result client-side — no endpoint, no
+				infra.
+			</p>
+			<CodeBlock html={redirectUriHtml} label="TYPESCRIPT" />
+
+			<div className="callout warn">
+				<div className="callout-tag">[ RESULT IS IN THE URL ]</div>
+				<p>
+					With <code className="inline">redirect_uri</code>, the signed result
+					lands in the browser URL bar and history. Use{" "}
+					<code className="inline">callback</code> for anything involving real
+					money or sensitive data that must stay server-side.
+				</p>
+			</div>
+
+			<h2 id="callback">Parsing the server callback</h2>
 			<p>
 				Sigil POSTs a JSON body to your callback URL from the Rust layer.{" "}
 				<code className="inline">parseCallback</code> validates the shape and

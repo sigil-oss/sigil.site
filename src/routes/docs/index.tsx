@@ -6,8 +6,9 @@ const URI_SHAPE = `sigil://v1/request?d=<base64url-encoded JSON envelope>
                    [&cb=<optional HTTPS callback URL>]`;
 
 const ENVELOPE_SHAPE = `interface SigilEnvelope {
-  request: SigilRequest;   // discriminated union on "type"
-  callback?: string | null;
+  request: SigilRequest;    // discriminated union on "type"
+  callback?: string | null; // server POST — Sigil POSTs result to this URL
+  redirect_uri?: string | null; // client redirect — Sigil opens browser to this URL
   proof?: {
     version: 1;
     algorithm: "ES256";
@@ -101,10 +102,19 @@ function DocsOverview() {
 					<code className="inline">{"{ request, callback?, proof? }"}</code>
 				</li>
 				<li>
-					Callback can be in the envelope's{" "}
-					<code className="inline">callback</code> field or as{" "}
-					<code className="inline">&amp;cb=</code> — both present means they
-					must match
+					Server delivery: set <code className="inline">callback</code> — Sigil
+					POSTs the result as JSON from the Rust layer
+				</li>
+				<li>
+					Client delivery: set <code className="inline">redirect_uri</code> —
+					Sigil opens{" "}
+					<code className="inline">
+						redirect_uri?result=&lt;base64url JSON&gt;
+					</code>{" "}
+					in the browser; no server needed
+				</li>
+				<li>
+					Both can be set — Sigil POSTs then redirects; either alone also works
 				</li>
 				<li>Envelope max size: 8 192 bytes base64</li>
 			</ul>
@@ -136,8 +146,10 @@ function DocsOverview() {
 					shows it to the user.
 				</li>
 				<li>
-					<strong>User approves or rejects.</strong> Sigil POSTs the result to
-					your callback from the Rust layer.
+					<strong>User approves or rejects.</strong> Sigil delivers the result —
+					POSTs to <code className="inline">callback</code> if set, and/or opens{" "}
+					<code className="inline">redirect_uri?result=…</code> in the browser
+					if set.
 				</li>
 			</ol>
 
