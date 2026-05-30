@@ -15,6 +15,9 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsVueRouteImport } from './routes/docs/vue'
+import { Route as DocsVanillaRouteImport } from './routes/docs/vanilla'
+import { Route as DocsServerRouteImport } from './routes/docs/server'
 import { Route as DocsSdkRouteImport } from './routes/docs/sdk'
 import { Route as DocsRequestTypesRouteImport } from './routes/docs/request-types'
 import { Route as DocsReferenceRouteImport } from './routes/docs/reference'
@@ -49,6 +52,21 @@ const IndexRoute = IndexRouteImport.update({
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsVueRoute = DocsVueRouteImport.update({
+  id: '/vue',
+  path: '/vue',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsVanillaRoute = DocsVanillaRouteImport.update({
+  id: '/vanilla',
+  path: '/vanilla',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsServerRoute = DocsServerRouteImport.update({
+  id: '/server',
+  path: '/server',
   getParentRoute: () => DocsRoute,
 } as any)
 const DocsSdkRoute = DocsSdkRouteImport.update({
@@ -88,6 +106,9 @@ export interface FileRoutesByFullPath {
   '/docs/reference': typeof DocsReferenceRoute
   '/docs/request-types': typeof DocsRequestTypesRoute
   '/docs/sdk': typeof DocsSdkRoute
+  '/docs/server': typeof DocsServerRoute
+  '/docs/vanilla': typeof DocsVanillaRoute
+  '/docs/vue': typeof DocsVueRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -100,6 +121,9 @@ export interface FileRoutesByTo {
   '/docs/reference': typeof DocsReferenceRoute
   '/docs/request-types': typeof DocsRequestTypesRoute
   '/docs/sdk': typeof DocsSdkRoute
+  '/docs/server': typeof DocsServerRoute
+  '/docs/vanilla': typeof DocsVanillaRoute
+  '/docs/vue': typeof DocsVueRoute
   '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
@@ -114,6 +138,9 @@ export interface FileRoutesById {
   '/docs/reference': typeof DocsReferenceRoute
   '/docs/request-types': typeof DocsRequestTypesRoute
   '/docs/sdk': typeof DocsSdkRoute
+  '/docs/server': typeof DocsServerRoute
+  '/docs/vanilla': typeof DocsVanillaRoute
+  '/docs/vue': typeof DocsVueRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
@@ -129,6 +156,9 @@ export interface FileRouteTypes {
     | '/docs/reference'
     | '/docs/request-types'
     | '/docs/sdk'
+    | '/docs/server'
+    | '/docs/vanilla'
+    | '/docs/vue'
     | '/docs/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,6 +171,9 @@ export interface FileRouteTypes {
     | '/docs/reference'
     | '/docs/request-types'
     | '/docs/sdk'
+    | '/docs/server'
+    | '/docs/vanilla'
+    | '/docs/vue'
     | '/docs'
   id:
     | '__root__'
@@ -154,6 +187,9 @@ export interface FileRouteTypes {
     | '/docs/reference'
     | '/docs/request-types'
     | '/docs/sdk'
+    | '/docs/server'
+    | '/docs/vanilla'
+    | '/docs/vue'
     | '/docs/'
   fileRoutesById: FileRoutesById
 }
@@ -209,6 +245,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsIndexRouteImport
       parentRoute: typeof DocsRoute
     }
+    '/docs/vue': {
+      id: '/docs/vue'
+      path: '/vue'
+      fullPath: '/docs/vue'
+      preLoaderRoute: typeof DocsVueRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/vanilla': {
+      id: '/docs/vanilla'
+      path: '/vanilla'
+      fullPath: '/docs/vanilla'
+      preLoaderRoute: typeof DocsVanillaRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/server': {
+      id: '/docs/server'
+      path: '/server'
+      fullPath: '/docs/server'
+      preLoaderRoute: typeof DocsServerRouteImport
+      parentRoute: typeof DocsRoute
+    }
     '/docs/sdk': {
       id: '/docs/sdk'
       path: '/sdk'
@@ -253,6 +310,9 @@ interface DocsRouteChildren {
   DocsReferenceRoute: typeof DocsReferenceRoute
   DocsRequestTypesRoute: typeof DocsRequestTypesRoute
   DocsSdkRoute: typeof DocsSdkRoute
+  DocsServerRoute: typeof DocsServerRoute
+  DocsVanillaRoute: typeof DocsVanillaRoute
+  DocsVueRoute: typeof DocsVueRoute
   DocsIndexRoute: typeof DocsIndexRoute
 }
 
@@ -262,6 +322,9 @@ const DocsRouteChildren: DocsRouteChildren = {
   DocsReferenceRoute: DocsReferenceRoute,
   DocsRequestTypesRoute: DocsRequestTypesRoute,
   DocsSdkRoute: DocsSdkRoute,
+  DocsServerRoute: DocsServerRoute,
+  DocsVanillaRoute: DocsVanillaRoute,
+  DocsVueRoute: DocsVueRoute,
   DocsIndexRoute: DocsIndexRoute,
 }
 

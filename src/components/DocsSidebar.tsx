@@ -23,7 +23,12 @@ const NAV: NavSection[] = [
 	},
 	{
 		section: "[ GUIDES ]",
-		links: [{ to: "/docs/react", label: "React" }],
+		links: [
+			{ to: "/docs/react", label: "React" },
+			{ to: "/docs/vue", label: "Vue 3" },
+			{ to: "/docs/vanilla", label: "Vanilla JS" },
+			{ to: "/docs/server", label: "Server-side" },
+		],
 	},
 	{
 		section: "[ MORE ]",
