@@ -27,16 +27,31 @@ const NAV: NavSection[] = [
 	},
 ];
 
-export function DocsSidebar() {
+interface Props {
+	open?: boolean;
+	onClose?: () => void;
+}
+
+export function DocsSidebar({ open, onClose }: Props) {
 	return (
-		<aside className="docs-aside">
-			<Link to="/" className="docs-brand">
-				<img src="/favicon.svg" alt="Sigil" />
-				<div>
-					<div className="docs-brand-name">SIGIL</div>
-					<span className="docs-brand-sub">DOCS · v1</span>
-				</div>
-			</Link>
+		<aside className={`docs-aside${open ? " open" : ""}`}>
+			<div className="docs-aside-top">
+				<Link to="/" className="docs-brand" onClick={onClose}>
+					<img src="/favicon.svg" alt="Sigil" />
+					<div>
+						<div className="docs-brand-name">SIGIL</div>
+						<span className="docs-brand-sub">DOCS · v1</span>
+					</div>
+				</Link>
+				<button
+					className="docs-close-btn"
+					onClick={onClose}
+					aria-label="Close navigation"
+					type="button"
+				>
+					✕
+				</button>
+			</div>
 			<nav className="docs-nav">
 				{NAV.map(({ section, links }) => (
 					<div key={section}>
@@ -48,6 +63,7 @@ export function DocsSidebar() {
 								className="docs-nav-link"
 								activeProps={{ className: "docs-nav-link active" }}
 								activeOptions={{ exact: to === "/docs" }}
+								onClick={onClose}
 							>
 								{label}
 							</Link>
