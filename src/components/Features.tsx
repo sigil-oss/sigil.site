@@ -34,7 +34,7 @@ export function Features() {
           <Feature num="[ 02 ]" title="Receive QUBIC" body="Your address as a QR code, ready to share. Tap to copy — clears from your clipboard 30 seconds later." tag="[ AUTO-CLEAR CLIPBOARD ]" tagVariant="info" />
           <Feature num="[ 03 ]" title="Pay 25 people at once" body="Splitting a bill, paying contributors, sending airdrops — up to 25 addresses in a single transaction." tag="[ ONE TX · 25 RECIPIENTS ]" />
           <Feature num="[ 04 ]" title="Contacts" body="Save addresses by name so you never paste the wrong one. One-click send to anyone in your book." tag="[ ONE-CLICK SEND ]" tagVariant="info" />
-          <Feature num="[ 05 ]" title="Full history" body="Every transaction you've sent or received, with plain-English labels for contract calls like "QUtil · Send to Many."" tag="[ SEARCH + FILTER ]" tagVariant="info" />
+          <Feature num="[ 05 ]" title="Full history" body={'Every transaction you\'ve sent or received, with plain-English labels for contract calls like "QUtil · Send to Many."'} tag="[ SEARCH + FILTER ]" tagVariant="info" />
           <Feature num="[ 06 ]" title="Burn QUBIC" body="Permanently destroy QU — for protocol fees, contract operations, or just because. Two confirmations, no surprises." tag="[ IRREVERSIBLE ]" tagVariant="warn" />
         </div>
 
