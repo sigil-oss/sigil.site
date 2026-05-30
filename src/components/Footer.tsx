@@ -56,6 +56,7 @@ export function Footer() {
 					<div className="footer-col">
 						<h4>Brand</h4>
 						<Link to="/brand">Press kit</Link>
+						<Link to="/sponsors">Sponsors</Link>
 					</div>
 				</div>
 				<div className="footer-bottom">

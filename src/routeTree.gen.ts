@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SponsorsRoute = SponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DownloadRoute = DownloadRouteImport.update({
   id: '/download',
   path: '/download',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRoute
   '/download': typeof DownloadRoute
+  '/sponsors': typeof SponsorsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRoute
   '/download': typeof DownloadRoute
+  '/sponsors': typeof SponsorsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRoute
   '/download': typeof DownloadRoute
+  '/sponsors': typeof SponsorsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/brand' | '/docs' | '/download'
+  fullPaths: '/' | '/brand' | '/docs' | '/download' | '/sponsors'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/brand' | '/docs' | '/download'
-  id: '__root__' | '/' | '/brand' | '/docs' | '/download'
+  to: '/' | '/brand' | '/docs' | '/download' | '/sponsors'
+  id: '__root__' | '/' | '/brand' | '/docs' | '/download' | '/sponsors'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   BrandRoute: typeof BrandRoute
   DocsRoute: typeof DocsRoute
   DownloadRoute: typeof DownloadRoute
+  SponsorsRoute: typeof SponsorsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sponsors': {
+      id: '/sponsors'
+      path: '/sponsors'
+      fullPath: '/sponsors'
+      preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/download': {
       id: '/download'
       path: '/download'
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandRoute: BrandRoute,
   DocsRoute: DocsRoute,
   DownloadRoute: DownloadRoute,
+  SponsorsRoute: SponsorsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

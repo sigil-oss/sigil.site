@@ -33,6 +33,9 @@ export function Nav() {
 					<Link to="/brand" onClick={() => track("brand")}>
 						Brand
 					</Link>
+					<Link to="/sponsors" onClick={() => track("sponsors")}>
+						Sponsors
+					</Link>
 					<Link
 						to="/download"
 						className="cta"
