@@ -109,7 +109,6 @@ nav {
   .hero { padding: 56px 0 40px; }
 }
 @media (max-width: 980px) {
-  .hero-visual { display: none; }
   .hero { padding: 40px 0 32px; }
   .hero-eyebrow { margin-bottom: 16px; }
 }
@@ -223,6 +222,9 @@ nav {
 }
 .hero-visual rect.cell {
   animation: fade-in-stagger 600ms ease-out backwards;
+}
+@media (max-width: 980px) {
+  .hero-visual { display: none; }
 }
 
 .hero-meta {
