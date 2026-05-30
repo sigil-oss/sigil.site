@@ -29,9 +29,16 @@ const NAV = [
     { id: 'type-sign',     label: 'sign_message' },
     { id: 'type-verify',   label: 'verify_message' },
   ]},
+  { section: '[ @SIGIL-OSS/CONNECT ]', links: [
+    { id: 'sdk',            label: 'Overview & install' },
+    { id: 'sdk-unsigned',   label: 'Unsigned requests' },
+    { id: 'sdk-signed',     label: 'Signed requests' },
+    { id: 'sdk-callbacks',  label: 'Parsing callbacks' },
+  ]},
   { section: '[ REFERENCE ]', links: [
-    { id: 'errors', label: 'Validation & errors' },
-    { id: 'full',   label: 'Full example' },
+    { id: 'cb-shapes',  label: 'Callback shapes' },
+    { id: 'errors',     label: 'Validation & errors' },
+    { id: 'full',       label: 'Full example' },
   ]},
 ]
 
@@ -235,47 +242,359 @@ function DocsPage() {
             </tbody>
           </table>
 
+          {/* ── @sigil-oss/connect ───────────────────────────────────────── */}
+          <h2 id="sdk">@sigil-oss/connect</h2>
+          <p>
+            The official SDK handles envelope construction, ES256 signing, and callback parsing so you don't
+            wire up base64url encoding and canonicalization yourself.
+          </p>
+          <pre className="doc-pre"><span className="pre-label">INSTALL</span>{`npm install @sigil-oss/connect
+# or
+bun add @sigil-oss/connect`}</pre>
+          <p>
+            Source and changelog: <a className="doc-link" href="https://github.com/sigil-oss/sigil.connect" target="_blank" rel="noopener noreferrer">github.com/sigil-oss/sigil.connect</a>.
+            The package re-exports the same Zod schema that Sigil's renderer uses, so a request that parses
+            in the SDK is guaranteed to parse inside the wallet.
+          </p>
+
+          <h2 id="sdk-unsigned">Unsigned requests</h2>
+          <p>
+            Unsigned requests show a <strong>trust level of "unverified"</strong> in the wallet UI — the dApp name
+            and origin are self-reported and can't be verified. Use them for prototyping or internal tooling
+            where trust is established by other means.
+          </p>
+          <pre className="doc-pre"><span className="pre-label">TRANSFER</span>{`import { buildSigilUri } from '@sigil-oss/connect'
+
+const uri = buildSigilUri({
+  request: {
+    type: 'transfer',
+    nonce: crypto.randomUUID(),
+    dapp: { name: 'Acme', origin: 'https://acme.example' },
+    to: 'RECIPIENT60CHARIDENTITYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    amount: 1_500_000,
+    // optional: from, tick_offset
+  },
+  callback: 'https://acme.example/sigil/callback',
+})
+window.location.href = uri`}</pre>
+          <pre className="doc-pre"><span className="pre-label">SIGN MESSAGE</span>{`const uri = buildSigilUri({
+  request: {
+    type: 'sign_message',
+    nonce: crypto.randomUUID(),
+    dapp: { name: 'Acme', origin: 'https://acme.example', icon: 'https://acme.example/logo.png' },
+    message: \`Sign in to Acme · \${new Date().toISOString()}\`,
+    exp: Math.floor(Date.now() / 1000) + 300,  // 5 min, max 1 hour
+    // optional: from, data
+  },
+  callback: 'https://acme.example/sigil/callback',
+})`}</pre>
+          <pre className="doc-pre"><span className="pre-label">CONNECT (REQUEST PERMISSIONS)</span>{`const uri = buildSigilUri({
+  request: {
+    type: 'connect',
+    nonce: crypto.randomUUID(),
+    dapp: { name: 'Acme', origin: 'https://acme.example' },
+    permissions: ['transfer', 'sign_message'],  // or omit to ask for nothing pre-approved
+  },
+  callback: 'https://acme.example/sigil/callback',
+})`}</pre>
+          <pre className="doc-pre"><span className="pre-label">SC CALL (QEARN LOCK EXAMPLE)</span>{`const uri = buildSigilUri({
+  request: {
+    type: 'sc_call',
+    nonce: crypto.randomUUID(),
+    dapp: { name: 'Acme', origin: 'https://acme.example' },
+    contract_index: 6,     // Qearn
+    input_type: 1,         // lock procedure
+    amount: 10_000_000,
+    // optional: payload (base64 encoded input bytes), from, tick_offset
+  },
+  callback: 'https://acme.example/sigil/callback',
+})`}</pre>
+
+          <h2 id="sdk-signed">Signed requests</h2>
+          <p>
+            Signed requests include an ES256 <code className="inline">proof</code> that lets Sigil verify the request
+            came from your registered dApp identity. The wallet evaluates each request against a local trusted
+            issuer registry and surfaces one of these trust levels:
+          </p>
+          <table className="fields">
+            <thead><tr><th>Level</th><th>Meaning</th><th>Blocks approval?</th></tr></thead>
+            <tbody>
+              <tr><td><code className="inline">legacy_unverified</code></td><td>No proof present — dApp name/origin are self-reported</td><td>No</td></tr>
+              <tr><td><code className="inline">signed_untrusted</code></td><td>Valid ES256 signature, but issuer not in the user's local registry</td><td>No</td></tr>
+              <tr><td><code className="inline">verified_registry</code></td><td>Valid signature, issuer in registry, origin matches</td><td>No</td></tr>
+              <tr><td><code className="inline">signature_invalid</code></td><td>Proof present but signature verification failed, or payload hash mismatch</td><td>Yes</td></tr>
+              <tr><td><code className="inline">registry_revoked</code></td><td>Issuer is in the registry but marked revoked</td><td>Yes</td></tr>
+              <tr><td><code className="inline">registry_origin_mismatch</code></td><td>Issuer is registered but <code className="inline">dapp.origin</code> doesn't match its trusted origins</td><td>Yes</td></tr>
+            </tbody>
+          </table>
+
+          <h3>How the proof is computed</h3>
+          <p>
+            The SDK handles this, but here's what happens under the hood so you can audit it or implement
+            it without the SDK:
+          </p>
+          <ul className="brief">
+            <li><strong>Canonical payload</strong> = deterministic JSON of <code className="inline">{'{ request, callback }'}</code> with keys sorted recursively</li>
+            <li><strong>payload_hash</strong> = SHA-256 of the canonical payload, base64url-encoded (no padding)</li>
+            <li><strong>signature</strong> = ECDSA P-256 + SHA-256 (<code className="inline">SubtleCrypto</code> <code className="inline">ES256</code>) over the canonical payload, base64url-encoded</li>
+            <li>Include <code className="inline">public_jwk</code> for self-verifying proofs; omit it to rely on registry lookup only</li>
+          </ul>
+
+          <pre className="doc-pre"><span className="pre-label">SIGNED REQUEST (SDK)</span>{`import { buildSigilUri, signEnvelope } from '@sigil-oss/connect'
+
+// Generate once and register the public key with your issuer entry.
+// Keep privateKey secure — never expose it to the browser.
+const { privateKey, publicKey } = await crypto.subtle.generateKey(
+  { name: 'ECDSA', namedCurve: 'P-256' },
+  true,   // extractable — needed to export the JWK for registration
+  ['sign', 'verify'],
+)
+
+const envelope = {
+  request: {
+    type: 'sign_message',
+    nonce: crypto.randomUUID(),
+    dapp: { name: 'Acme', origin: 'https://acme.example' },
+    message: \`Sign in · \${new Date().toISOString()}\`,
+    exp: Math.floor(Date.now() / 1000) + 300,
+  },
+  callback: 'https://acme.example/sigil/callback',
+}
+
+// signEnvelope adds the proof object and returns a new envelope
+const signed = await signEnvelope(envelope, {
+  issuer: 'https://acme.example',     // stable identifier for your dApp
+  privateKey,                          // CryptoKey — never leaves server
+  keyId: 'key-2026-01',               // optional — useful for key rotation
+  includePublicJwk: true,             // embed public key for self-verifying proofs
+})
+
+window.location.href = buildSigilUri(signed)`}</pre>
+
+          <div className="callout warn">
+            <div className="callout-tag">[ SIGN ON THE SERVER, NOT IN THE BROWSER ]</div>
+            <p>
+              The ES256 private key must never be exposed to the browser. Build the signed envelope on your
+              server and return the final <code className="inline">sigil://</code> URI (or just the <code className="inline">d=</code> parameter)
+              to the client. The client only opens it.
+            </p>
+          </div>
+
+          <pre className="doc-pre"><span className="pre-label">SERVER-SIDE SIGNING (NODE / EXPRESS)</span>{`import { buildSigilUri, signEnvelope, loadPrivateKey } from '@sigil-oss/connect/node'
+import express from 'express'
+
+const app = express()
+// Load your ECDSA P-256 private key from a secret store (env var, Vault, KMS, etc.)
+const privateKey = await loadPrivateKey(process.env.SIGIL_SIGNING_KEY)
+
+app.post('/api/sigil/prepare', async (req, res) => {
+  const { action, payload } = req.body
+
+  const envelope = {
+    request: {
+      type: action,
+      nonce: crypto.randomUUID(),
+      dapp: { name: 'Acme', origin: 'https://acme.example' },
+      ...payload,
+    },
+    callback: 'https://acme.example/sigil/callback',
+  }
+
+  const signed = await signEnvelope(envelope, {
+    issuer: 'https://acme.example',
+    privateKey,
+    keyId: 'key-2026-01',
+  })
+
+  res.json({ uri: buildSigilUri(signed) })
+})`}</pre>
+
+          <h2 id="sdk-callbacks">Parsing callbacks</h2>
+          <p>
+            Sigil POSTs a JSON body to your callback URL from its Rust layer. The SDK's <code className="inline">parseSigilCallback</code>{' '}
+            validates the shape and returns a discriminated union you can switch on.
+          </p>
+          <pre className="doc-pre"><span className="pre-label">NODE / EXPRESS CALLBACK HANDLER</span>{`import { parseSigilCallback } from '@sigil-oss/connect'
+import express from 'express'
+
+const app = express()
+app.use(express.json())
+
+const pending = new Map()  // nonce → { userId, expectedAction }
+
+app.post('/sigil/callback', (req, res) => {
+  const result = parseSigilCallback(req.body)
+  if (!result.ok) return res.status(400).json({ error: result.error })
+
+  const { status, nonce, type } = result.data
+
+  // Always verify the nonce matches what you sent
+  const session = pending.get(nonce)
+  if (!session) return res.status(404).send('unknown nonce')
+  pending.delete(nonce)  // single-use
+
+  if (status === 'rejected') {
+    console.log('user rejected:', result.data.reason)
+    return res.sendStatus(200)
+  }
+
+  switch (type) {
+    case 'transfer':
+    case 'sc_call': {
+      // result.data: { status: 'signed', identity, tx_hash, target_tick }
+      console.log('tx broadcast:', result.data.tx_hash, 'tick:', result.data.target_tick)
+      break
+    }
+    case 'sign_message': {
+      // result.data: { status: 'signed', identity, signature, public_key }
+      // Verify the signature yourself if needed — or send a verify_message request back
+      markLoggedIn(session.userId, result.data.identity)
+      break
+    }
+    case 'verify_message': {
+      // result.data: { status: 'verified', valid: boolean, identity }
+      console.log('signature valid:', result.data.valid)
+      break
+    }
+    case 'connect': {
+      // result.data: { status: 'connected', identity, permissions: string[] }
+      saveWalletSession(session.userId, result.data.identity, result.data.permissions)
+      break
+    }
+  }
+
+  res.sendStatus(200)
+})`}</pre>
+
+          {/* Callback shapes */}
+          <h2 id="cb-shapes">Callback shapes</h2>
+          <p>All callbacks include <code className="inline">status</code>, <code className="inline">nonce</code>, and <code className="inline">type</code>. The remaining fields depend on the outcome.</p>
+
+          <h3>transfer / sc_call — approved</h3>
+          <pre className="doc-pre">{`{
+  "status":      "signed",
+  "type":        "transfer" | "sc_call",
+  "nonce":       "<nonce you sent>",
+  "identity":    "<60-char Qubic identity that signed>",
+  "tx_hash":     "<transaction hash>",
+  "target_tick": 14872123
+}`}</pre>
+
+          <h3>sign_message — approved</h3>
+          <pre className="doc-pre">{`{
+  "status":     "signed",
+  "type":       "sign_message",
+  "nonce":      "<nonce you sent>",
+  "identity":   "<60-char Qubic identity>",
+  "signature":  "<ECDSA signature, base64>",
+  "public_key": "<public key, base64>"
+}`}</pre>
+
+          <h3>verify_message — complete</h3>
+          <pre className="doc-pre">{`{
+  "status":   "verified",
+  "type":     "verify_message",
+  "nonce":    "<nonce you sent>",
+  "valid":    true | false,
+  "identity": "<derived identity, or empty string>"
+}`}</pre>
+
+          <h3>connect — approved</h3>
+          <pre className="doc-pre">{`{
+  "status":      "connected",
+  "type":        "connect",
+  "nonce":       "<nonce you sent>",
+  "identity":    "<60-char Qubic identity>",
+  "permissions": ["transfer", "sign_message"]  // whatever the user granted
+}`}</pre>
+
+          <h3>Any type — rejected</h3>
+          <pre className="doc-pre">{`{
+  "status": "rejected",
+  "type":   "<original request type>",
+  "nonce":  "<nonce you sent>",
+  "reason": "user_rejected"
+}`}</pre>
+
+          <div className="callout info">
+            <div className="callout-tag">[ TYPESCRIPT TYPES ]</div>
+            <p>
+              <code className="inline">@sigil-oss/connect</code> re-exports{' '}
+              <code className="inline">SigilCallbackResponse</code>,{' '}
+              <code className="inline">SigilSignedTransferCallback</code>,{' '}
+              <code className="inline">SigilSignedMessageCallback</code>,{' '}
+              <code className="inline">SigilConnectedCallback</code>,{' '}
+              <code className="inline">SigilVerifiedCallback</code>, and{' '}
+              <code className="inline">SigilRejectedCallback</code> — all derived from the same Zod schema Sigil uses internally.
+            </p>
+          </div>
+
           {/* Validation */}
           <h2 id="errors">Validation & errors</h2>
-          <p>Sigil validates every URI in Rust <em>before</em> the renderer sees it. Failures are dropped silently — check Sigil's stderr if your popup doesn't appear.</p>
+          <p>Sigil validates every URI in Rust <em>before</em> the renderer sees it. Failures are logged to stderr and the request is silently dropped — no popup will appear. Check stderr if debugging.</p>
           <h3>What Sigil rejects up front</h3>
           <ul className="brief">
             <li>Scheme isn't <code className="inline">sigil</code> or host isn't <code className="inline">v1</code></li>
-            <li>Missing <code className="inline">d</code> parameter or invalid base64url</li>
+            <li>Missing <code className="inline">d</code> parameter, payload over 8 192 bytes, or invalid base64url</li>
             <li>Missing <code className="inline">type</code>, <code className="inline">nonce</code>, or <code className="inline">dapp.origin</code></li>
             <li>Unknown <code className="inline">type</code>, or nonce outside 16–128 chars or invalid charset</li>
             <li><code className="inline">dapp.origin</code> scheme isn't <code className="inline">https</code></li>
             <li><code className="inline">exp</code> is in the past, or more than 1 hour from now</li>
             <li>Callback isn't HTTPS (except <code className="inline">http://localhost</code> / <code className="inline">http://127.0.0.1</code> for local dev)</li>
             <li>Callback targets a private or loopback address (other than localhost)</li>
-            <li>Nonce was used before (replay protection)</li>
-            <li>Type-specific validation fails</li>
+            <li>Nonce was used before (replay protection — 1-hour window, persisted to disk)</li>
+            <li>Type-specific validation fails (invalid identity format, non-positive amount, etc.)</li>
           </ul>
 
           {/* Full example */}
           <h2 id="full">Full working example</h2>
-          <p>Plain HTML page that asks Sigil to sign a login message.</p>
-          <pre className="doc-pre"><span className="pre-label">CLIENT</span>{`document.getElementById('signin').addEventListener('click', () => {
-  const request = {
-    type: 'sign_message',
-    nonce: crypto.randomUUID(),   // 16+ chars, alphanumeric
-    dapp: { name: 'Acme', origin: 'https://acme.example' },
-    message: \`Sign in to Acme · \${new Date().toISOString()}\`,
-    exp: Math.floor(Date.now() / 1000) + 300,  // 5 min
-  };
+          <p>Minimal login flow: client builds a signed envelope on the server and opens it; server verifies the nonce on callback.</p>
+          <pre className="doc-pre"><span className="pre-label">SERVER — prepare endpoint</span>{`// POST /api/sigil/prepare → { uri }
+app.post('/api/sigil/prepare', async (req, res) => {
+  const nonce = crypto.randomUUID()
+  pending.set(nonce, { userId: req.session.userId })
 
-  // Wrap in envelope — callback goes here, not as a query param
-  const envelope = { request, callback: 'https://acme.example/sigil/callback' };
-  const d = btoa(JSON.stringify(envelope))
-    .replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+  const signed = await signEnvelope({
+    request: {
+      type: 'sign_message',
+      nonce,
+      dapp: { name: 'Acme', origin: 'https://acme.example' },
+      message: \`Sign in to Acme · \${new Date().toISOString()}\`,
+      exp: Math.floor(Date.now() / 1000) + 300,
+    },
+    callback: 'https://acme.example/sigil/callback',
+  }, { issuer: 'https://acme.example', privateKey, keyId: 'key-2026-01' })
 
-  window.location.href = \`sigil://v1/request?d=\${d}\`;
-});`}</pre>
+  res.json({ uri: buildSigilUri(signed) })
+})`}</pre>
+          <pre className="doc-pre"><span className="pre-label">CLIENT — open Sigil</span>{`const { uri } = await fetch('/api/sigil/prepare', { method: 'POST' }).then(r => r.json())
+window.location.href = uri   // OS hands it to Sigil`}</pre>
+          <pre className="doc-pre"><span className="pre-label">SERVER — callback handler</span>{`app.post('/sigil/callback', (req, res) => {
+  const result = parseSigilCallback(req.body)
+  if (!result.ok) return res.sendStatus(400)
+
+  const { status, nonce, type } = result.data
+  const session = pending.get(nonce)
+  if (!session) return res.sendStatus(404)
+  pending.delete(nonce)
+
+  if (status === 'rejected') return res.sendStatus(200)
+
+  if (status === 'signed' && type === 'sign_message') {
+    markLoggedIn(session.userId, result.data.identity)
+    // optionally: issue a signed verify_message request to double-check the signature
+  }
+  res.sendStatus(200)
+})`}</pre>
 
           <div className="callout info">
-            <div className="callout-tag">[ NEXT STEPS ]</div>
-            <p>Open the Sigil <code className="inline">deep_link.rs</code> source for the exact validator, or read the request screen TSX to see how each callback body is built. Both are browseable in the{' '}
-            <a className="doc-link" href="https://github.com/sigil-oss/sigil.app" target="_blank" rel="noopener noreferrer">GitHub repo</a>.</p>
+            <div className="callout-tag">[ SOURCE ]</div>
+            <p>
+              Rust validator: <code className="inline">src-tauri/src/deep_link.rs</code> ·{' '}
+              Zod schema + callback types: <code className="inline">src/lib/request-schema.ts</code> ·{' '}
+              Trust evaluation: <code className="inline">src/lib/request-trust.ts</code>{' '}—{' '}
+              all browseable at <a className="doc-link" href="https://github.com/sigil-oss/sigil.app" target="_blank" rel="noopener noreferrer">github.com/sigil-oss/sigil.app</a>.
+            </p>
           </div>
 
         </div>
