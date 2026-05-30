@@ -56,7 +56,7 @@ app.post('/api/sigil/callback', async (req, res) => {
 const NONCE_STORE = `// Before building the sigil:// URI, store the nonce server-side
 // so the callback handler can verify it belongs to a real request.
 
-import { createConnectRequest } from '@sigil-oss/connect';
+import { buildSigilUrl, createEnvelope, createConnectRequest } from '@sigil-oss/connect';
 
 app.get('/api/sigil/connect', async (req, res) => {
   const req_ = createConnectRequest({
@@ -77,36 +77,37 @@ app.get('/api/sigil/connect', async (req, res) => {
   res.json({ url });
 });`;
 
-const SIGN_IN_VERIFY = `// POST /api/auth/qubic — verify a sign_message result sent from the browser
+const SIGN_IN_VERIFY = `// routes/auth.ts
+import { verifyQubicSignature } from '@qubic-lib/crypto';
+import type { Express } from 'express';
 
-import { parseCallbackResponse } from '@sigil-oss/connect';
-import { verifyQubicSignature } from '@qubic-lib/crypto'; // your Qubic crypto lib
+export function registerAuthRoutes(app: Express) {
+  // POST /api/auth/qubic — verify a sign_message result sent from the browser
+  app.post('/api/auth/qubic', async (req, res) => {
+    const { identity, signature, public_key, nonce, issuedAt } = req.body;
 
-app.post('/api/auth/qubic', async (req, res) => {
-  const { identity, signature, public_key, nonce } = req.body;
+    // 1. Deduplicate nonce (ioredis example — adapt to your Redis client)
+    const key = \`sigil:nonce:\${nonce}\`;
+    const used = await redis.get(key);
+    if (used) return res.status(400).json({ error: 'nonce_reused' });
+    await redis.set(key, '1', 'EX', 300);
 
-  // 1. Check nonce hasn't been used before (Redis or DB, 5-min TTL)
-  const used = await redis.get(\`sigil:nonce:\${nonce}\`);
-  if (used) return res.status(400).json({ error: 'nonce_reused' });
-  await redis.set(\`sigil:nonce:\${nonce}\`, '1', 'EX', 300);
+    // 2. Reconstruct the exact message that was signed
+    const message = [
+      'Sign in to My App',
+      \`nonce: \${nonce}\`,
+      \`issuedAt: \${issuedAt}\`,
+    ].join('\\n');
 
-  // 2. Reconstruct the exact message that was signed
-  //    You need the nonce and issuedAt — either store them server-side before
-  //    the redirect or have the client echo them back from sessionStorage.
-  const message = [
-    'Sign in to My App',
-    \`nonce: \${nonce}\`,
-    \`issuedAt: \${req.body.issuedAt}\`,
-  ].join('\\n');
+    // 3. Verify the Qubic ECDSA signature
+    const valid = await verifyQubicSignature({ message, signature, publicKey: public_key });
+    if (!valid) return res.status(401).json({ error: 'invalid_signature' });
 
-  // 3. Verify the Qubic signature
-  const valid = await verifyQubicSignature({ message, signature, publicKey: public_key });
-  if (!valid) return res.status(401).json({ error: 'invalid_signature' });
-
-  // 4. Identity is verified — issue a session
-  const token = await createSession(identity);
-  res.json({ token });
-});`;
+    // 4. Identity verified — issue a session token
+    const token = await createSession(identity);
+    res.json({ token });
+  });
+}`;
 
 const NEXTJS_CALLBACK = `// app/api/sigil/callback/route.ts — Next.js App Router
 import { parseCallbackResponse } from '@sigil-oss/connect';

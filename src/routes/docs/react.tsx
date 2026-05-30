@@ -5,7 +5,7 @@ import { hl } from "#/lib/shiki";
 const INSTALL = `npm install @sigil-oss/connect`;
 
 const USE_SIGIL_HOOK = `// hooks/useSigil.ts
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   sigilRequest,
   type SigilRequest,
@@ -18,8 +18,11 @@ export function useSigil() {
   const [status, setStatus] = useState<Status>('idle');
   const [result, setResult] = useState<SigilCallbackResponse | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  const pendingRef = useRef(false);
 
   const request = useCallback(async (req: SigilRequest) => {
+    if (pendingRef.current) throw new Error('A Sigil request is already in progress');
+    pendingRef.current = true;
     setStatus('pending');
     setResult(null);
     setError(null);
@@ -33,6 +36,8 @@ export function useSigil() {
       setError(e);
       setStatus('error');
       throw e;
+    } finally {
+      pendingRef.current = false;
     }
   }, []);
 
@@ -159,7 +164,7 @@ export function SignInButton({ onSignIn }: Props) {
       })
     );
 
-    if (res.status === 'rejected') return;
+    if (res.status !== 'signed' || res.type !== 'sign_message') return;
 
     // Send to your server for verification
     const response = await fetch('/api/auth/qubic', {
@@ -209,12 +214,16 @@ export function TransferButton({ to, amount, onSent }: Props) {
       })
     );
 
-    if (res.status === 'signed') {
+    if (res.status === 'signed' && (res.type === 'transfer' || res.type === 'sc_call')) {
       onSent?.(res.tx_hash);
     }
   }
 
-  if (status === 'success' && result?.status === 'signed') {
+  if (
+    status === 'success' &&
+    result?.status === 'signed' &&
+    (result.type === 'transfer' || result.type === 'sc_call')
+  ) {
     return <p>Sent — tx: {result.tx_hash.slice(0, 12)}…</p>;
   }
 

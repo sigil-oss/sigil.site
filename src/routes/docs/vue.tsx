@@ -18,8 +18,11 @@ export function useSigil() {
   const status = ref<Status>('idle');
   const result = ref<SigilCallbackResponse | null>(null);
   const error = ref<Error | null>(null);
+  let pending = false;
 
   async function request(req: SigilRequest) {
+    if (pending) throw new Error('A Sigil request is already in progress');
+    pending = true;
     status.value = 'pending';
     result.value = null;
     error.value = null;
@@ -33,6 +36,8 @@ export function useSigil() {
       error.value = err instanceof Error ? err : new Error(String(err));
       status.value = 'error';
       throw error.value;
+    } finally {
+      pending = false;
     }
   }
 
@@ -134,7 +139,7 @@ async function signIn() {
     })
   );
 
-  if (res.status !== 'signed') return;
+  if (res.status !== 'signed' || res.type !== 'sign_message') return;
 
   const response = await fetch('/api/auth/qubic', {
     method: 'POST',
@@ -176,12 +181,12 @@ async function send() {
       amount: props.amount,
     })
   );
-  if (res.status === 'signed') emit('sent', res.tx_hash);
+  if (res.status === 'signed' && (res.type === 'transfer' || res.type === 'sc_call')) emit('sent', res.tx_hash);
 }
 </script>
 
 <template>
-  <p v-if="status === 'success' && result?.status === 'signed'">
+  <p v-if="status === 'success' && result?.status === 'signed' && (result.type === 'transfer' || result.type === 'sc_call')">
     Sent — tx: {{ result.tx_hash.slice(0, 12) }}…
   </p>
   <button v-else @click="send" :disabled="status === 'pending'">

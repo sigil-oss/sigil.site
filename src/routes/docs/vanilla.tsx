@@ -2,16 +2,26 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CodeBlock } from "#/components/CodeBlock";
 import { hl } from "#/lib/shiki";
 
-const CDN = `<!-- No build tools needed — import straight from a CDN -->
+const CDN = `<!-- No build tools needed — import directly in a module script -->
 <script type="module">
   import {
     sigilRequest,
-    handleRedirect,
     createConnectRequest,
-    createSignMessageRequest,
   } from 'https://esm.sh/@sigil-oss/connect@latest';
 
-  window.__sigil = { sigilRequest, handleRedirect, createConnectRequest, createSignMessageRequest };
+  document.getElementById('connect-btn').addEventListener('click', async () => {
+    const result = await sigilRequest(
+      createConnectRequest({
+        type: 'connect',
+        dapp: { name: 'My App', origin: 'https://myapp.example' },
+        permissions: ['transfer', 'sign_message'],
+      })
+    );
+
+    if (result.status === 'connected') {
+      console.log('identity:', result.identity);
+    }
+  });
 </script>`;
 
 const NPM = `npm install @sigil-oss/connect`;
@@ -34,6 +44,7 @@ const CONNECT = `import {
 } from '@sigil-oss/connect';
 
 const btn = document.getElementById('connect-btn');
+if (!btn) throw new Error('connect-btn not found');
 
 btn.addEventListener('click', async () => {
   btn.disabled = true;
@@ -49,7 +60,8 @@ btn.addEventListener('click', async () => {
     );
 
     if (result.status === 'connected') {
-      document.getElementById('identity').textContent = result.identity;
+      const el = document.getElementById('identity');
+    if (el) el.textContent = result.identity;
     } else {
       btn.textContent = 'Rejected';
     }
@@ -80,7 +92,7 @@ async function signIn() {
     })
   );
 
-  if (result.status !== 'signed') return;
+  if (result.status !== 'signed' || result.type !== 'sign_message') return;
 
   const res = await fetch('/api/auth/qubic', {
     method: 'POST',
@@ -117,7 +129,7 @@ async function sendPayment(to, amount) {
     })
   );
 
-  if (result.status === 'signed') {
+  if (result.status === 'signed' && (result.type === 'transfer' || result.type === 'sc_call')) {
     console.log('tx hash:', result.tx_hash);
     console.log('target tick:', result.target_tick);
   }
