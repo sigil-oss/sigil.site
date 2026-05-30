@@ -1318,7 +1318,17 @@ ul.brief li::after  { content: ']'; color: var(--text-secondary); margin-left: 6
   background: var(--elevated);
   padding-top: 24px; padding-bottom: 36px;
 }
-.sp-podium-medal { font-size: 20px; line-height: 1; margin-bottom: -4px; }
+.sp-podium-badge {
+  font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; width: 36px; height: 36px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary); background: var(--bg);
+}
+.sp-podium-badge-1 {
+  background: var(--text-display); color: var(--bg); border-color: var(--text-display);
+}
+.sp-podium-badge-3 { opacity: 0.6; }
 .sp-podium-identicon { display: block; }
 .sp-podium-name {
   font-family: 'Space Grotesk', sans-serif; font-weight: 500;

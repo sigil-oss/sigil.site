@@ -198,8 +198,6 @@ function SponsorsPage() {
 	);
 }
 
-const MEDAL = ["🥇", "🥈", "🥉"] as const;
-
 function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
 	const podium = sponsors.slice(0, 3);
 	const rest = sponsors.slice(3);
@@ -223,7 +221,9 @@ function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
 								key={sp.identity}
 								className={`sp-podium-slot${isFirst ? " sp-podium-first" : ""}`}
 							>
-								<div className="sp-podium-medal">{MEDAL[rank]}</div>
+								<div className={`sp-podium-badge sp-podium-badge-${rank + 1}`}>
+									{String(rank + 1).padStart(2, "0")}
+								</div>
 								<Identicon
 									seed={sp.identity}
 									size={isFirst ? 72 : 56}
@@ -232,9 +232,6 @@ function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
 								/>
 								<div className="sp-podium-name">{sp.name}</div>
 								<div className="sp-podium-amount">{formatQu(sp.amountQu)}</div>
-								<div className="sp-podium-rank">
-									#{String(rank + 1).padStart(2, "0")}
-								</div>
 							</div>
 						);
 					})}
