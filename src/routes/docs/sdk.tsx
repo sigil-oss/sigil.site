@@ -81,23 +81,31 @@ app.post('/api/sigil/callback', express.json(), async (req, res) => {
   res.sendStatus(200);
 });`;
 
-const SIGNED_KEY = `import { generateKey, buildSignedUri } from '@sigil-oss/connect';
+const ASYNC_REQUEST = `import { sigilRequest, createSignMessageRequest } from '@sigil-oss/connect';
 
-// Run once — persist privateKey securely, expose publicJwk to the SDK
-const { privateKey, publicJwk } = await generateKey();
+// One await — no server, no redirect boilerplate
+const result = await sigilRequest(
+  createSignMessageRequest({
+    type: 'sign_message',
+    dapp: { name: 'My App', origin: 'https://myapp.example' },
+    message: 'Sign in to My App · ' + new Date().toISOString(),
+  }),
+  // Sigil opens /__sigil__ after the user acts; handleRedirect() broadcasts
+  // the result back over a BroadcastChannel and this Promise resolves.
+  { callbackPath: '/__sigil__' },
+);
 
-// Later: sign a request server-side before redirecting the client
-const uri = await buildSignedUri(
-  {
-    request: {
-      type: 'connect',
-      nonce: crypto.randomUUID(),
-      dapp: { name: 'My App', origin: 'https://myapp.example' },
-    },
-    callback: 'https://myapp.example/api/sigil/callback',
-  },
-  { privateKey, publicJwk, issuer: 'https://myapp.example' },
-);`;
+if (result.status === 'signed') {
+  console.log('identity:', result.identity);
+  console.log('signature:', result.signature);
+}`;
+
+const HANDLE_REDIRECT = `// Mount this at the callbackPath route in your app — e.g. pages/__sigil__.tsx
+import { handleRedirect } from '@sigil-oss/connect';
+
+// Call it on page load. It reads ?result=…, posts to the BroadcastChannel
+// that sigilRequest() is listening on, then closes the tab.
+handleRedirect();`;
 
 export const Route = createFileRoute("/docs/sdk")({
 	head: () => ({
@@ -106,33 +114,36 @@ export const Route = createFileRoute("/docs/sdk")({
 			{
 				name: "description",
 				content:
-					"Install and use the @sigil-oss/connect SDK to build Sigil deep-link URIs, sign envelopes with ES256, and parse callback results.",
+					"Install and use the @sigil-oss/connect SDK: async sigilRequest() for zero-server dApps, or manual URI building with callback/redirect_uri delivery.",
 			},
 		],
 	}),
 	loader: async () => {
 		const [
 			installHtml,
+			asyncRequestHtml,
+			handleRedirectHtml,
 			buildUriHtml,
 			transferHtml,
 			redirectUriHtml,
 			parseHtml,
-			signedHtml,
 		] = await Promise.all([
 			hl(INSTALL, "bash"),
+			hl(ASYNC_REQUEST, "typescript"),
+			hl(HANDLE_REDIRECT, "typescript"),
 			hl(BUILD_URI, "typescript"),
 			hl(TRANSFER_URI, "typescript"),
 			hl(REDIRECT_URI, "typescript"),
 			hl(PARSE_CALLBACK, "typescript"),
-			hl(SIGNED_KEY, "typescript"),
 		]);
 		return {
 			installHtml,
+			asyncRequestHtml,
+			handleRedirectHtml,
 			buildUriHtml,
 			transferHtml,
 			redirectUriHtml,
 			parseHtml,
-			signedHtml,
 		};
 	},
 	component: SdkPage,
@@ -141,11 +152,12 @@ export const Route = createFileRoute("/docs/sdk")({
 function SdkPage() {
 	const {
 		installHtml,
+		asyncRequestHtml,
+		handleRedirectHtml,
 		buildUriHtml,
 		transferHtml,
 		redirectUriHtml,
 		parseHtml,
-		signedHtml,
 	} = Route.useLoaderData();
 
 	return (
@@ -155,10 +167,10 @@ function SdkPage() {
 				@sigil-oss/<span className="doto">connect</span>
 			</h1>
 			<p>
-				Official TypeScript SDK for the Sigil deep-link protocol. It builds
-				envelopes, handles base64url encoding, optionally signs requests with
-				ES256, and gives you typed callback results. Everything the SDK does you
-				can also do by hand — see the{" "}
+				Official TypeScript SDK for the Sigil deep-link protocol. Build
+				envelopes, launch requests, and handle results — either as a simple{" "}
+				<code className="inline">await</code> or via manual URI construction.
+				See the{" "}
 				<a className="doc-link" href="/docs/payload">
 					Payload format
 				</a>{" "}
@@ -226,27 +238,26 @@ function SdkPage() {
 			</p>
 			<CodeBlock html={parseHtml} label="TYPESCRIPT" />
 
-			<h2 id="signed">Signed requests</h2>
+			<h2 id="async">Async API — await the result</h2>
 			<p>
-				Unsigned requests display a{" "}
-				<code className="inline">legacy_unverified</code> badge in Sigil's
-				review UI — the dApp name and origin are self-reported and unverifiable.
-				Signed requests carry an ES256 <code className="inline">proof</code>; if
-				the proof is valid and the issuer appears in Sigil's registry, the
-				request shows as <code className="inline">verified_registry</code>. An
-				invalid signature blocks the request entirely.
+				<code className="inline">sigilRequest()</code> launches Sigil via a link
+				click (the page stays alive), then returns a{" "}
+				<code className="inline">Promise</code> that resolves when the user
+				acts. Internally it uses{" "}
+				<code className="inline">BroadcastChannel</code> — no server, no
+				polling.
 			</p>
-			<CodeBlock html={signedHtml} label="TYPESCRIPT" />
+			<CodeBlock html={asyncRequestHtml} label="TYPESCRIPT" />
 
-			<div className="callout warn">
-				<div className="callout-tag">[ NEVER IN THE BROWSER ]</div>
-				<p>
-					Sign on the server. Build the <code className="inline">sigil://</code>{" "}
-					URI server-side and redirect the client to it, or return it as JSON.
-					Exposing a private key in client-side code lets anyone impersonate
-					your dApp.
-				</p>
-			</div>
+			<h2 id="handle-redirect">handleRedirect — callback page</h2>
+			<p>
+				Mount this at the <code className="inline">callbackPath</code> route in
+				your app (default <code className="inline">/__sigil__</code>). It reads
+				the <code className="inline">?result=</code> param, broadcasts it to the
+				waiting <code className="inline">sigilRequest()</code> Promise, and
+				closes the tab.
+			</p>
+			<CodeBlock html={handleRedirectHtml} label="TYPESCRIPT" />
 		</div>
 	);
 }

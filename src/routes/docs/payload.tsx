@@ -9,11 +9,16 @@ const ENCODE_FN = `function b64url(str: string): string {
     .replaceAll('=', '');
 }
 
-function buildSigilUri(request: SigilRequest, callback?: string): string {
-  // Wrap in the envelope — callback lives here, not as a query param
-  const envelope = { request, callback: callback ?? null };
-  const d = b64url(JSON.stringify(envelope));
-  return \`sigil://v1/request?d=\${d}\`;
+function buildSigilUri(
+  request: SigilRequest,
+  options: { callback?: string; redirect_uri?: string } = {},
+): string {
+  const envelope = {
+    request,
+    callback: options.callback ?? null,
+    redirect_uri: options.redirect_uri ?? null,
+  };
+  return \`sigil://v1/request?d=\${b64url(JSON.stringify(envelope))}\`;
 }`;
 
 const REJECT_CB = `{
