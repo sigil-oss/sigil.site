@@ -61,7 +61,7 @@ export function Download() {
           <div className="feature">
             <span className="num">[ ⌂ ]</span>
             <h3 className="h">Linux</h3>
-            <p className="b">AppImage runs anywhere. Or grab the .deb for Debian/Ubuntu, or .rpm for Fedora/RHEL.</p>
+            <p className="b">AppImage runs anywhere and updates automatically. .deb and .rpm packages update through your package manager.</p>
             <a
               className="btn primary"
               href={GITHUB}

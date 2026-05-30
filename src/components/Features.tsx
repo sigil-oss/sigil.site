@@ -54,14 +54,14 @@ export function Features() {
         <div className="feature-group-title">[ CONNECT & SIGN ]</div>
         <div className="features">
           <Feature num="[ 12 ]" title="Connect to QUBIC apps" body="Any QUBIC web app or tool can ask Sigil to sign. You see exactly what they want before anything happens." tag="[ YOU SEE FIRST ]" />
-          <Feature num="[ 13 ]" title="First-time warnings" body="Sigil flags apps you haven't approved before with a [FIRST TIME] tag. Recognized apps show as [APPROVED]." tag="[ STAY ALERT ]" tagVariant="warn" />
+          <Feature num="[ 13 ]" title="Trust verification" body="Sigil evaluates each request: unverified (self-reported), signed by an unknown issuer, or fully verified against a trusted registry. Invalid signatures block approval entirely." tag="[ STAY ALERT ]" tagVariant="warn" />
           <Feature num="[ 14 ]" title="Sign messages" body="Prove you own an address by signing a message — for logins, contract reviews, or just verifying identity." tag="[ NO PAYMENT NEEDED ]" tagVariant="info" />
         </div>
 
         <div className="feature-group-title">[ SECURITY & UNLOCK ]</div>
         <div className="features">
-          <Feature num="[ 15 ]" title="Touch ID, Face ID, Windows Hello" body="Unlock with the biometric you already use. Your password stays in your OS's secure store — not in Sigil." tag="[ ALL THREE PLATFORMS ]" tagVariant="info" />
-          <Feature num="[ 16 ]" title="Auto-lock" body="Walks away, closes laptop, switches apps — Sigil locks itself. The lock is enforced at the OS level, not the UI." tag="[ AUTOMATIC ]" tagVariant="warn" />
+          <Feature num="[ 15 ]" title="Touch ID, Windows Hello, OS keyring" body="Unlock with Touch ID on Mac, Windows Hello on Windows, or your OS credential store on Linux. Your password is managed by the OS — never stored by Sigil." tag="[ ALL THREE PLATFORMS ]" tagVariant="info" />
+          <Feature num="[ 16 ]" title="Auto-lock" body="Idle timeout, laptop sleep, or window blur — Sigil locks on all three. Locking happens in the Rust layer; the renderer can't skip it." tag="[ AUTOMATIC ]" tagVariant="warn" />
           <Feature num="[ 17 ]" title="Backup verification" body="When you create a wallet, Sigil quizzes you on 4 random positions of your recovery phrase before letting you continue." tag="[ NO SKIPPING ]" />
         </div>
 
@@ -70,7 +70,7 @@ export function Features() {
           <Feature num="[ 18 ]" title="Desktop notifications" body="Get pinged when a transaction confirms, when someone sends you QU, or when a signature request comes in — even if Sigil is minimized." tag="[ NATIVE OS NOTIFS ]" tagVariant="info" />
           <Feature num="[ 19 ]" title="Make it yours" body="Pick a font, an accent color, a density. Stick to OLED black or warm paper, or let it follow your system. Sigil should feel like yours, not ours." tag="[ APPEARANCE SETTINGS ]" tagVariant="info" />
           <Feature num="[ 20 ]" title="Auto-updates" body="New version shows up in Settings when ready. Click to install, live progress, app reopens itself when done." tag="[ SIGNED & VERIFIED ]" />
-          <Feature num="[ 21 ]" title="Keyboard shortcuts" body="⌘L locks. ⌘N for a new send. ⌘K opens quick search across contacts and history. Every action has a key." tag="[ POWER USER READY ]" tagVariant="info" />
+          <Feature num="[ 21 ]" title="Global search" body="Search across accounts, contacts, transaction hashes, memos, and known contracts from anywhere in the app." tag="[ SEARCH EVERYWHERE ]" tagVariant="info" />
         </div>
       </section>
     </div>
