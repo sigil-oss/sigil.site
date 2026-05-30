@@ -223,69 +223,71 @@ function DocsPage() {
 						envelope. The <code className="inline">request</code> object inside
 						it contains these required fields on every request type:
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Field</th>
-								<th>Type</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									type <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									One of <code className="inline">connect</code>,{" "}
-									<code className="inline">transfer</code>,{" "}
-									<code className="inline">sc_call</code>,{" "}
-									<code className="inline">sign_message</code>,{" "}
-									<code className="inline">verify_message</code>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									nonce <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									16–128 chars, alphanumeric or{" "}
-									<code className="inline">-_=+</code>. Must be unique — Sigil
-									tracks seen nonces for 1 hour and rejects replays
-								</td>
-							</tr>
-							<tr>
-								<td>
-									dapp.origin <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									Must be a valid <strong>HTTPS</strong> URL, e.g.{" "}
-									<code className="inline">https://yourapp.example</code>
-								</td>
-							</tr>
-							<tr>
-								<td>dapp.name</td>
-								<td>string</td>
-								<td>Display name shown to the user. Strongly recommended</td>
-							</tr>
-							<tr>
-								<td>dapp.icon</td>
-								<td>string</td>
-								<td>URL to the dApp's icon. Optional</td>
-							</tr>
-							<tr>
-								<td>exp</td>
-								<td>integer</td>
-								<td>
-									Unix seconds. Defaults to 5 minutes from receipt if omitted.
-									Max 1 hour from now — requests further out are rejected
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Type</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										type <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										One of <code className="inline">connect</code>,{" "}
+										<code className="inline">transfer</code>,{" "}
+										<code className="inline">sc_call</code>,{" "}
+										<code className="inline">sign_message</code>,{" "}
+										<code className="inline">verify_message</code>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										nonce <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										16–128 chars, alphanumeric or{" "}
+										<code className="inline">-_=+</code>. Must be unique — Sigil
+										tracks seen nonces for 1 hour and rejects replays
+									</td>
+								</tr>
+								<tr>
+									<td>
+										dapp.origin <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										Must be a valid <strong>HTTPS</strong> URL, e.g.{" "}
+										<code className="inline">https://yourapp.example</code>
+									</td>
+								</tr>
+								<tr>
+									<td>dapp.name</td>
+									<td>string</td>
+									<td>Display name shown to the user. Strongly recommended</td>
+								</tr>
+								<tr>
+									<td>dapp.icon</td>
+									<td>string</td>
+									<td>URL to the dApp's icon. Optional</td>
+								</tr>
+								<tr>
+									<td>exp</td>
+									<td>integer</td>
+									<td>
+										Unix seconds. Defaults to 5 minutes from receipt if omitted.
+										Max 1 hour from now — requests further out are rejected
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 
 					<h3 id="encoding">Encoding the URI</h3>
 					<p>
@@ -405,35 +407,37 @@ function DocsPage() {
 						Ask the user to pair their wallet with your app and optionally
 						pre-grant permissions.
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Field</th>
-								<th>Type</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									type <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									<code className="inline">"connect"</code>
-								</td>
-							</tr>
-							<tr>
-								<td>permissions</td>
-								<td>string[]</td>
-								<td>
-									Any subset of <code className="inline">"transfer"</code>,{" "}
-									<code className="inline">"sc_call"</code>,{" "}
-									<code className="inline">"sign_message"</code>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Type</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										type <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										<code className="inline">"connect"</code>
+									</td>
+								</tr>
+								<tr>
+									<td>permissions</td>
+									<td>string[]</td>
+									<td>
+										Any subset of <code className="inline">"transfer"</code>,{" "}
+										<code className="inline">"sc_call"</code>,{" "}
+										<code className="inline">"sign_message"</code>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 					<pre className="doc-pre">
 						<span className="pre-label">REQUEST PAYLOAD</span>
 						{"{"}
@@ -458,42 +462,44 @@ function DocsPage() {
 						Send an amount of QU from the user's selected account to a
 						recipient.
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Field</th>
-								<th>Type</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									type <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									<code className="inline">"transfer"</code>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									to <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									Exactly 60 uppercase A–Z letters (Qubic identity format)
-								</td>
-							</tr>
-							<tr>
-								<td>
-									amount <span className="req">*</span>
-								</td>
-								<td>integer</td>
-								<td>Positive. Whole QU units</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Type</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										type <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										<code className="inline">"transfer"</code>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										to <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										Exactly 60 uppercase A–Z letters (Qubic identity format)
+									</td>
+								</tr>
+								<tr>
+									<td>
+										amount <span className="req">*</span>
+									</td>
+									<td>integer</td>
+									<td>Positive. Whole QU units</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 					<pre className="doc-pre">
 						<span className="pre-label">REQUEST PAYLOAD</span>
 						{"{"}
@@ -520,61 +526,63 @@ function DocsPage() {
 						Call a Qubic smart contract function. Sigil constructs the SC
 						invocation transaction and signs it.
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Field</th>
-								<th>Type</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									type <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									<code className="inline">"sc_call"</code>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									contract_index <span className="req">*</span>
-								</td>
-								<td>integer</td>
-								<td>0–63</td>
-							</tr>
-							<tr>
-								<td>
-									input_type <span className="req">*</span>
-								</td>
-								<td>integer</td>
-								<td>Non-negative. The procedure number on the contract</td>
-							</tr>
-							<tr>
-								<td>payload</td>
-								<td>string</td>
-								<td>
-									Base64-encoded input bytes for the call (if the procedure
-									takes input)
-								</td>
-							</tr>
-							<tr>
-								<td>amount</td>
-								<td>integer</td>
-								<td>QU attached to the call, if any</td>
-							</tr>
-							<tr>
-								<td>from</td>
-								<td>string</td>
-								<td>
-									Prefer a specific account identity. Optional — user can
-									override
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Type</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										type <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										<code className="inline">"sc_call"</code>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										contract_index <span className="req">*</span>
+									</td>
+									<td>integer</td>
+									<td>0–63</td>
+								</tr>
+								<tr>
+									<td>
+										input_type <span className="req">*</span>
+									</td>
+									<td>integer</td>
+									<td>Non-negative. The procedure number on the contract</td>
+								</tr>
+								<tr>
+									<td>payload</td>
+									<td>string</td>
+									<td>
+										Base64-encoded input bytes for the call (if the procedure
+										takes input)
+									</td>
+								</tr>
+								<tr>
+									<td>amount</td>
+									<td>integer</td>
+									<td>QU attached to the call, if any</td>
+								</tr>
+								<tr>
+									<td>from</td>
+									<td>string</td>
+									<td>
+										Prefer a specific account identity. Optional — user can
+										override
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 
 					{/* sign_message */}
 					<h2 id="type-sign">sign_message</h2>
@@ -582,35 +590,37 @@ function DocsPage() {
 						Ask the user to sign a message without sending a transaction. Useful
 						for proving address ownership.
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Field</th>
-								<th>Type</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									type <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									<code className="inline">"sign_message"</code>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									message <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									Non-empty, max 2 048 characters. Shown verbatim to the user
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Type</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										type <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										<code className="inline">"sign_message"</code>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										message <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										Non-empty, max 2 048 characters. Shown verbatim to the user
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 					<pre className="doc-pre">
 						<span className="pre-label">APPROVE CALLBACK</span>
 						{"{"}
@@ -638,47 +648,49 @@ function DocsPage() {
 						Hand Sigil a message + signature + public key, get back whether the
 						signature is valid.
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Field</th>
-								<th>Type</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									type <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>
-									<code className="inline">"verify_message"</code>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									message <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>The original message that was signed</td>
-							</tr>
-							<tr>
-								<td>
-									signature <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>The signature to verify</td>
-							</tr>
-							<tr>
-								<td>
-									public_key <span className="req">*</span>
-								</td>
-								<td>string</td>
-								<td>The public key to verify against</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Type</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										type <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>
+										<code className="inline">"verify_message"</code>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										message <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>The original message that was signed</td>
+								</tr>
+								<tr>
+									<td>
+										signature <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>The signature to verify</td>
+								</tr>
+								<tr>
+									<td>
+										public_key <span className="req">*</span>
+									</td>
+									<td>string</td>
+									<td>The public key to verify against</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 
 					{/* ── @sigil-oss/connect ───────────────────────────────────────── */}
 					<h2 id="sdk">@sigil-oss/connect</h2>
@@ -783,69 +795,71 @@ window.location.href = uri`}
 						evaluates each request against a local trusted issuer registry and
 						surfaces one of these trust levels:
 					</p>
-					<table className="fields">
-						<thead>
-							<tr>
-								<th>Level</th>
-								<th>Meaning</th>
-								<th>Blocks approval?</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									<code className="inline">legacy_unverified</code>
-								</td>
-								<td>No proof present — dApp name/origin are self-reported</td>
-								<td>No</td>
-							</tr>
-							<tr>
-								<td>
-									<code className="inline">signed_untrusted</code>
-								</td>
-								<td>
-									Valid ES256 signature, but issuer not in the user's local
-									registry
-								</td>
-								<td>No</td>
-							</tr>
-							<tr>
-								<td>
-									<code className="inline">verified_registry</code>
-								</td>
-								<td>Valid signature, issuer in registry, origin matches</td>
-								<td>No</td>
-							</tr>
-							<tr>
-								<td>
-									<code className="inline">signature_invalid</code>
-								</td>
-								<td>
-									Proof present but signature verification failed, or payload
-									hash mismatch
-								</td>
-								<td>Yes</td>
-							</tr>
-							<tr>
-								<td>
-									<code className="inline">registry_revoked</code>
-								</td>
-								<td>Issuer is in the registry but marked revoked</td>
-								<td>Yes</td>
-							</tr>
-							<tr>
-								<td>
-									<code className="inline">registry_origin_mismatch</code>
-								</td>
-								<td>
-									Issuer is registered but{" "}
-									<code className="inline">dapp.origin</code> doesn't match its
-									trusted origins
-								</td>
-								<td>Yes</td>
-							</tr>
-						</tbody>
-					</table>
+					<div className="fields-wrap">
+						<table className="fields">
+							<thead>
+								<tr>
+									<th>Level</th>
+									<th>Meaning</th>
+									<th>Blocks approval?</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<code className="inline">legacy_unverified</code>
+									</td>
+									<td>No proof present — dApp name/origin are self-reported</td>
+									<td>No</td>
+								</tr>
+								<tr>
+									<td>
+										<code className="inline">signed_untrusted</code>
+									</td>
+									<td>
+										Valid ES256 signature, but issuer not in the user's local
+										registry
+									</td>
+									<td>No</td>
+								</tr>
+								<tr>
+									<td>
+										<code className="inline">verified_registry</code>
+									</td>
+									<td>Valid signature, issuer in registry, origin matches</td>
+									<td>No</td>
+								</tr>
+								<tr>
+									<td>
+										<code className="inline">signature_invalid</code>
+									</td>
+									<td>
+										Proof present but signature verification failed, or payload
+										hash mismatch
+									</td>
+									<td>Yes</td>
+								</tr>
+								<tr>
+									<td>
+										<code className="inline">registry_revoked</code>
+									</td>
+									<td>Issuer is in the registry but marked revoked</td>
+									<td>Yes</td>
+								</tr>
+								<tr>
+									<td>
+										<code className="inline">registry_origin_mismatch</code>
+									</td>
+									<td>
+										Issuer is registered but{" "}
+										<code className="inline">dapp.origin</code> doesn't match
+										its trusted origins
+									</td>
+									<td>Yes</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 
 					<h3>How the proof is computed</h3>
 					<p>
