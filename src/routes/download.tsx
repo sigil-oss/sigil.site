@@ -7,8 +7,8 @@ import {
 	fetchReleaseData,
 	formatBytes,
 	formatDownloads,
-	RELEASES_FALLBACK,
 	type GHAsset,
+	RELEASES_FALLBACK,
 } from "#/lib/github";
 
 export const Route = createFileRoute("/download")({
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/download")({
 			{
 				name: "description",
 				content:
-					"Download Sigil for Mac, Windows, or Linux. Free, open source, no signups.",
+					"Download Sigil for Mac, Windows, and Linux. Native app, open source, MIT licence.",
 			},
 		],
 	}),
@@ -94,9 +94,9 @@ function DownloadPage() {
 
 	const os = detectedOS ?? "mac";
 	const primary = platforms[os];
-	const others = (Object.entries(platforms) as [OS, (typeof platforms)[OS]][]).filter(
-		([k]) => k !== os,
-	);
+	const others = (
+		Object.entries(platforms) as [OS, (typeof platforms)[OS]][]
+	).filter(([k]) => k !== os);
 
 	return (
 		<>
@@ -114,8 +114,7 @@ function DownloadPage() {
 							Download <span className="doto">SIGIL</span>
 						</h1>
 						<p className="dl-sub">
-							Free forever · open source · no signups · keys never leave your
-							machine
+							Open source · MIT · native app · built for Qubic
 						</p>
 
 						{/* Stats row */}
@@ -152,18 +151,14 @@ function DownloadPage() {
 							<div className="dl-primary-label">{primary.label}</div>
 							<div className="dl-primary-note">
 								{primary.asset?.name ?? "—"}
-								{primary.asset &&
-									` · ${formatBytes(primary.asset.size)}`}
+								{primary.asset && ` · ${formatBytes(primary.asset.size)}`}
 								{" · "}
 								{primary.note}
 							</div>
 						</div>
 						<a
 							className="btn primary dl-primary-btn"
-							href={
-								primary.asset?.browser_download_url ??
-								RELEASES_FALLBACK
-							}
+							href={primary.asset?.browser_download_url ?? RELEASES_FALLBACK}
 							download={primary.asset?.name}
 							onClick={() => track(os)}
 						>
@@ -185,10 +180,7 @@ function DownloadPage() {
 									<a
 										key={key}
 										className="dl-extra-row"
-										href={
-											asset?.browser_download_url ??
-											RELEASES_FALLBACK
-										}
+										href={asset?.browser_download_url ?? RELEASES_FALLBACK}
 										download={asset?.name}
 										onClick={() => track(`linux-${key}`)}
 									>
@@ -213,18 +205,14 @@ function DownloadPage() {
 							<a
 								key={key}
 								className="dl-other"
-								href={
-									p.asset?.browser_download_url ?? RELEASES_FALLBACK
-								}
+								href={p.asset?.browser_download_url ?? RELEASES_FALLBACK}
 								download={p.asset?.name}
 								onClick={() => track(key)}
 							>
 								<span className="dl-other-symbol">{p.symbol}</span>
 								<div className="dl-other-info">
 									<span className="dl-other-label">{p.label}</span>
-									<span className="dl-other-file">
-										{p.asset?.name ?? "—"}
-									</span>
+									<span className="dl-other-file">{p.asset?.name ?? "—"}</span>
 									<span className="dl-other-note">{p.note}</span>
 								</div>
 								<span className="dl-other-size">
@@ -240,16 +228,14 @@ function DownloadPage() {
 						<div className="dl-note">
 							<span className="dl-note-key">[ UPDATES ]</span>
 							<span className="dl-note-val">
-								AppImage and the macOS/Windows installers update
-								automatically in-app. deb and rpm update through your
-								package manager.
+								AppImage and the macOS/Windows installers update automatically
+								in-app. deb and rpm update through your package manager.
 							</span>
 						</div>
 						<div className="dl-note">
 							<span className="dl-note-key">[ VERIFY ]</span>
 							<span className="dl-note-val">
-								Every release is signed. Checksums and signatures are in
-								the{" "}
+								Every release is signed. Checksums and signatures are in the{" "}
 								<a
 									className="dl-inline-link"
 									href={RELEASES_FALLBACK}
@@ -272,8 +258,7 @@ function DownloadPage() {
 								>
 									github.com/sigil-oss/sigil.app
 								</a>{" "}
-								— build from source with{" "}
-								<code>bun run tauri build</code>.
+								— build from source with <code>bun run tauri build</code>.
 							</span>
 						</div>
 					</div>

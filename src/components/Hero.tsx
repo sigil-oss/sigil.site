@@ -11,17 +11,20 @@ export function Hero() {
 					<div className="hero-copy">
 						<div className="hero-eyebrow">
 							<span className="dot" />
-							<span>OUT NOW · MAC · WINDOWS · LINUX</span>
+							<span>QUBIC DESKTOP WALLET · MAC · WINDOWS · LINUX</span>
 						</div>
 						<h1 className="hero-title">
-							Your <span className="doto">QUBIC</span>,<br />
-							<span className="signature">where you live.</span>
+							The <span className="doto">QUBIC</span>
+							<br />
+							<span className="signature">desktop wallet.</span>
 						</h1>
 						<p className="hero-tag">
-							Sigil is the desktop wallet for QUBIC. Yours, on your machine —{" "}
-							<strong>nobody else's servers, nobody else's accounts</strong>.
-							Open it when you need to send, sign, or stake. Close it when you
-							don't.
+							Sigil is a native app for Qubic.{" "}
+							<strong>
+								Send, receive, stake with Qearn, and sign contract calls
+							</strong>{" "}
+							— plus a deep-link protocol so any web app can request your
+							approval.
 						</p>
 						<div className="hero-actions">
 							<Link
@@ -31,7 +34,7 @@ export function Hero() {
 									posthog.capture("hero_cta_clicked", { location: "hero" })
 								}
 							>
-								<span>Download free</span>
+								<span>Download</span>
 								<span className="arrow">→</span>
 							</Link>
 							<a
@@ -47,11 +50,11 @@ export function Hero() {
 							</a>
 						</div>
 						<div className="hero-byline">
-							<span>FREE FOREVER</span>
-							<span className="dot" />
 							<span>OPEN SOURCE</span>
 							<span className="dot" />
-							<span>NO SIGNUPS</span>
+							<span>MIT</span>
+							<span className="dot" />
+							<span>BUILT FOR QUBIC</span>
 						</div>
 					</div>
 
@@ -170,27 +173,27 @@ export function Hero() {
 
 				<div className="hero-meta">
 					<div className="cell">
-						<div className="label">YOUR KEYS</div>
-						<div className="val">
-							STAY YOURS<span className="sub">/ ALWAYS</span>
-						</div>
-					</div>
-					<div className="cell">
-						<div className="label">SERVERS</div>
-						<div className="val">
-							ZERO<span className="sub">/ NONE / EVER</span>
-						</div>
-					</div>
-					<div className="cell">
-						<div className="label">RUNS ON</div>
+						<div className="label">PLATFORMS</div>
 						<div className="val">
 							MAC<span className="sub">+ WIN + LINUX</span>
 						</div>
 					</div>
 					<div className="cell">
-						<div className="label">PRICE</div>
+						<div className="label">PROTOCOL</div>
 						<div className="val">
-							FREE<span className="sub">/ OPEN SOURCE</span>
+							sigil://<span className="sub">/ DEEP-LINK</span>
+						</div>
+					</div>
+					<div className="cell">
+						<div className="label">STAKING</div>
+						<div className="val">
+							QEARN<span className="sub">/ BUILT-IN</span>
+						</div>
+					</div>
+					<div className="cell">
+						<div className="label">LICENSE</div>
+						<div className="val">
+							OPEN<span className="sub">/ SOURCE / MIT</span>
 						</div>
 					</div>
 				</div>
