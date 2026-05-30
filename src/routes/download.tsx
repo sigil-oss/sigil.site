@@ -3,6 +3,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Footer } from "#/components/Footer";
 import { Nav } from "#/components/Nav";
+import {
+	fetchReleaseData,
+	formatBytes,
+	formatDownloads,
+	RELEASES_FALLBACK,
+	type GHAsset,
+} from "#/lib/github";
 
 export const Route = createFileRoute("/download")({
 	head: () => ({
@@ -15,50 +22,11 @@ export const Route = createFileRoute("/download")({
 			},
 		],
 	}),
+	loader: () => fetchReleaseData(),
 	component: DownloadPage,
 });
 
 type OS = "mac" | "windows" | "linux";
-
-const RELEASES = "https://github.com/sigil-oss/sigil.app/releases/latest";
-
-const PLATFORMS: {
-	os: OS;
-	label: string;
-	symbol: string;
-	file: string;
-	note: string;
-}[] = [
-	{
-		os: "mac",
-		label: "macOS",
-		symbol: "⌘",
-		file: "Sigil.dmg",
-		note: "Apple Silicon + Intel · drag to Applications",
-	},
-	{
-		os: "windows",
-		label: "Windows",
-		symbol: "⊞",
-		file: "Sigil-setup.exe",
-		note: "Windows 10 or newer · runs the installer",
-	},
-	{
-		os: "linux",
-		label: "Linux",
-		symbol: "⌂",
-		file: "Sigil.AppImage",
-		note: "AppImage · auto-updates · runs anywhere",
-	},
-];
-
-const LINUX_EXTRAS = [
-	{ file: "Sigil.deb", note: ".deb — Debian / Ubuntu · update via apt" },
-	{
-		file: "Sigil.rpm",
-		note: ".rpm — Fedora / RHEL / openSUSE · update via dnf",
-	},
-];
 
 function detectOS(): OS | null {
 	if (typeof navigator === "undefined") return null;
@@ -69,10 +37,18 @@ function detectOS(): OS | null {
 	return null;
 }
 
-// Module-level set — no duplicate download events per platform per session
 const firedDownloads = new Set<string>();
 
+const LINUX_EXTRAS = [
+	{ key: "deb" as const, note: ".deb — Debian / Ubuntu · update via apt" },
+	{
+		key: "rpm" as const,
+		note: ".rpm — Fedora / RHEL / openSUSE · update via dnf",
+	},
+];
+
 function DownloadPage() {
+	const release = Route.useLoaderData();
 	const posthog = usePostHog();
 	const [detectedOS, setDetectedOS] = useState<OS | null>(null);
 
@@ -80,15 +56,46 @@ function DownloadPage() {
 		setDetectedOS(detectOS());
 	}, []);
 
-	const track = (platform: string, location = "download_page") => {
-		const key = `${platform}:${location}`;
+	const track = (platform: string) => {
+		const key = `${platform}:download_page`;
 		if (firedDownloads.has(key)) return;
 		firedDownloads.add(key);
-		posthog.capture("download_clicked", { platform, location });
+		posthog.capture("download_clicked", {
+			platform,
+			location: "download_page",
+			version: release.version,
+		});
 	};
 
-	const primary = PLATFORMS.find((p) => p.os === detectedOS) ?? PLATFORMS[0];
-	const others = PLATFORMS.filter((p) => p.os !== primary.os);
+	const platforms: Record<
+		OS,
+		{ asset: GHAsset | null; label: string; symbol: string; note: string }
+	> = {
+		mac: {
+			asset: release.mac,
+			label: "macOS",
+			symbol: "⌘",
+			note: "Apple Silicon + Intel · drag to Applications",
+		},
+		windows: {
+			asset: release.windows,
+			label: "Windows",
+			symbol: "⊞",
+			note: "Windows 10 or newer · runs the installer",
+		},
+		linux: {
+			asset: release.appimage,
+			label: "Linux",
+			symbol: "⌂",
+			note: "AppImage · auto-updates · runs anywhere",
+		},
+	};
+
+	const os = detectedOS ?? "mac";
+	const primary = platforms[os];
+	const others = (Object.entries(platforms) as [OS, (typeof platforms)[OS]][]).filter(
+		([k]) => k !== os,
+	);
 
 	return (
 		<>
@@ -109,6 +116,32 @@ function DownloadPage() {
 							Free forever · open source · no signups · keys never leave your
 							machine
 						</p>
+
+						{/* Stats row */}
+						<div className="dl-stats">
+							{release.version && (
+								<div className="dl-stat">
+									<span className="dl-stat-val">{release.version}</span>
+									<span className="dl-stat-label">LATEST</span>
+								</div>
+							)}
+							{release.totalDownloads > 0 && (
+								<div className="dl-stat">
+									<span className="dl-stat-val">
+										{formatDownloads(release.totalDownloads)}
+									</span>
+									<span className="dl-stat-label">DOWNLOADS</span>
+								</div>
+							)}
+							<div className="dl-stat">
+								<span className="dl-stat-val">3</span>
+								<span className="dl-stat-label">PLATFORMS</span>
+							</div>
+							<div className="dl-stat">
+								<span className="dl-stat-val">FREE</span>
+								<span className="dl-stat-label">ALWAYS</span>
+							</div>
+						</div>
 					</div>
 
 					{/* Primary download */}
@@ -116,58 +149,86 @@ function DownloadPage() {
 						<div className="dl-primary-symbol">{primary.symbol}</div>
 						<div className="dl-primary-info">
 							<div className="dl-primary-label">{primary.label}</div>
-							<div className="dl-primary-note">{primary.note}</div>
+							<div className="dl-primary-note">
+								{primary.asset?.name ?? "—"}
+								{primary.asset &&
+									` · ${formatBytes(primary.asset.size)}`}
+								{" · "}
+								{primary.note}
+							</div>
 						</div>
 						<a
 							className="btn primary dl-primary-btn"
-							href={RELEASES}
-							target="_blank"
-							rel="noopener noreferrer"
-							onClick={() => track(primary.os)}
+							href={
+								primary.asset?.browser_download_url ??
+								RELEASES_FALLBACK
+							}
+							download={primary.asset?.name}
+							onClick={() => track(os)}
 						>
-							<span>{primary.file}</span>
+							<span>
+								{primary.asset
+									? `Download ${formatBytes(primary.asset.size)}`
+									: "Download"}
+							</span>
 							<span className="arrow">↓</span>
 						</a>
 					</div>
 
 					{/* Linux extras */}
-					{primary.os === "linux" && (
+					{os === "linux" && (
 						<div className="dl-extras">
-							{LINUX_EXTRAS.map(({ file, note }) => (
-								<a
-									key={file}
-									className="dl-extra-row"
-									href={RELEASES}
-									target="_blank"
-									rel="noopener noreferrer"
-									onClick={() => track(`linux-${file.split(".").pop()}`)}
-								>
-									<span className="dl-extra-file">{file}</span>
-									<span className="dl-extra-note">{note}</span>
-									<span className="dl-extra-arrow">↓</span>
-								</a>
-							))}
+							{LINUX_EXTRAS.map(({ key, note }) => {
+								const asset = release[key];
+								return (
+									<a
+										key={key}
+										className="dl-extra-row"
+										href={
+											asset?.browser_download_url ??
+											RELEASES_FALLBACK
+										}
+										download={asset?.name}
+										onClick={() => track(`linux-${key}`)}
+									>
+										<span className="dl-extra-file">
+											{asset?.name ?? key.toUpperCase()}
+										</span>
+										<span className="dl-extra-note">{note}</span>
+										<span className="dl-extra-size">
+											{asset ? formatBytes(asset.size) : ""}
+										</span>
+										<span className="dl-extra-arrow">↓</span>
+									</a>
+								);
+							})}
 						</div>
 					)}
 
 					{/* Other platforms */}
 					<div className="dl-others-label">Other platforms</div>
 					<div className="dl-others">
-						{others.map(({ os, label, symbol, file, note }) => (
+						{others.map(([key, p]) => (
 							<a
-								key={os}
+								key={key}
 								className="dl-other"
-								href={RELEASES}
-								target="_blank"
-								rel="noopener noreferrer"
-								onClick={() => track(os)}
+								href={
+									p.asset?.browser_download_url ?? RELEASES_FALLBACK
+								}
+								download={p.asset?.name}
+								onClick={() => track(key)}
 							>
-								<span className="dl-other-symbol">{symbol}</span>
+								<span className="dl-other-symbol">{p.symbol}</span>
 								<div className="dl-other-info">
-									<span className="dl-other-label">{label}</span>
-									<span className="dl-other-file">{file}</span>
-									<span className="dl-other-note">{note}</span>
+									<span className="dl-other-label">{p.label}</span>
+									<span className="dl-other-file">
+										{p.asset?.name ?? "—"}
+									</span>
+									<span className="dl-other-note">{p.note}</span>
 								</div>
+								<span className="dl-other-size">
+									{p.asset ? formatBytes(p.asset.size) : ""}
+								</span>
 								<span className="dl-other-arrow">↓</span>
 							</a>
 						))}
@@ -178,17 +239,19 @@ function DownloadPage() {
 						<div className="dl-note">
 							<span className="dl-note-key">[ UPDATES ]</span>
 							<span className="dl-note-val">
-								AppImage and the macOS/Windows installers update automatically
-								in-app. deb and rpm update through your package manager.
+								AppImage and the macOS/Windows installers update
+								automatically in-app. deb and rpm update through your
+								package manager.
 							</span>
 						</div>
 						<div className="dl-note">
 							<span className="dl-note-key">[ VERIFY ]</span>
 							<span className="dl-note-val">
-								Every release is signed. Checksums and signatures are in the{" "}
+								Every release is signed. Checksums and signatures are in
+								the{" "}
 								<a
 									className="dl-inline-link"
-									href={RELEASES}
+									href={RELEASES_FALLBACK}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
@@ -208,12 +271,13 @@ function DownloadPage() {
 								>
 									github.com/sigil-oss/sigil.app
 								</a>{" "}
-								— build from source with <code>bun run tauri build</code>.
+								— build from source with{" "}
+								<code>bun run tauri build</code>.
 							</span>
 						</div>
 					</div>
 
-					{/* Build metadata */}
+					{/* Footer nav */}
 					<div className="dl-meta">
 						<Link to="/" className="dl-meta-link">
 							← Back to site

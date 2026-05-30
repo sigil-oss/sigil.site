@@ -1110,3 +1110,31 @@ ul.brief li::after  { content: ']'; color: var(--text-secondary); margin-left: 6
   .dl-note { flex-direction: column; gap: 8px; }
   .dl-note-key { width: auto; }
 }
+
+/* ========== Download page extras ========== */
+.dl-stats {
+  display: flex; gap: 48px; margin-top: 40px;
+  padding-top: 32px; border-top: 1px solid var(--border-strong);
+}
+.dl-stat { display: flex; flex-direction: column; gap: 6px; }
+.dl-stat-val {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 300;
+  font-size: 32px; color: var(--text-display); line-height: 1;
+  letter-spacing: -0.02em;
+}
+.dl-extra-size {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--text-secondary); flex-shrink: 0;
+}
+.dl-other-size {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--text-secondary); flex-shrink: 0; margin-right: 8px;
+}
+.dl-stat-label {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-secondary);
+}
+@media (max-width: 540px) {
+  .dl-stats { gap: 28px; flex-wrap: wrap; }
+  .dl-stat-val { font-size: 24px; }
+}
