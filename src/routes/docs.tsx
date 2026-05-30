@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { DocsSidebar } from "#/components/DocsSidebar";
-import { Nav } from "#/components/Nav";
+import { DocsToc } from "#/components/DocsToc";
 
 export const Route = createFileRoute("/docs")({
 	component: DocsLayout,
@@ -8,18 +8,18 @@ export const Route = createFileRoute("/docs")({
 
 function DocsLayout() {
 	return (
-		<>
-			<Nav />
-			<div className="docs-shell">
-				<DocsSidebar />
-				<main className="docs-main">
-					<div className="docs-topbar">
-						<span className="docs-topbar-label">SIGIL · INTEGRATION DOCS</span>
-						<Link to="/">← Back to site</Link>
-					</div>
+		<div className="docs-shell">
+			<DocsSidebar />
+			<div className="docs-main">
+				<div className="docs-topbar">
+					<span className="docs-topbar-label">SIGIL · INTEGRATION DOCS</span>
+					<Link to="/">← Back to site</Link>
+				</div>
+				<div className="docs-body">
 					<Outlet />
-				</main>
+					<DocsToc />
+				</div>
 			</div>
-		</>
+		</div>
 	);
 }
