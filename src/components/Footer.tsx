@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { usePostHog } from '@posthog/react'
 
 export function Footer() {
@@ -14,34 +15,30 @@ export function Footer() {
           </div>
           <div className="footer-col">
             <h4>Product</h4>
-            <a href="#features">Features</a>
-            <a href="#deeplink">Deep linking</a>
-            <a href="#security">Security</a>
-            <a href="#download">Download</a>
+            <a href="/#features">Features</a>
+            <a href="/#deeplink">Deep linking</a>
+            <a href="/#security">Security</a>
+            <a href="/#download">Download</a>
           </div>
           <div className="footer-col">
             <h4>Build</h4>
+            <Link to="/docs">Docs</Link>
             <a
               href="https://github.com/sigil-oss/sigil.app"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => posthog.capture('source_code_clicked', { location: 'footer', link: 'github' })}
+              onClick={() => posthog.capture('external_link_clicked', { location: 'footer', link: 'github' })}
             >GitHub</a>
             <a
               href="https://github.com/sigil-oss/sigil.app/releases"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => posthog.capture('source_code_clicked', { location: 'footer', link: 'changelog' })}
+              onClick={() => posthog.capture('external_link_clicked', { location: 'footer', link: 'changelog' })}
             >Changelog</a>
           </div>
           <div className="footer-col">
             <h4>Brand</h4>
-            <a
-              href="https://github.com/sigil-oss/sigil.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => posthog.capture('source_code_clicked', { location: 'footer', link: 'press_kit' })}
-            >Press kit</a>
+            <Link to="/brand">Press kit</Link>
           </div>
         </div>
         <div className="footer-bottom">
