@@ -29,22 +29,27 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
   head: () => ({
     meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
-      },
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'Sigil — Your QUBIC, on your computer' },
+      { name: 'description', content: 'A desktop wallet for QUBIC that stays on your computer. Your keys, your control — no signups, no servers. Mac, Windows, Linux.' },
+      { property: 'og:title', content: 'Sigil — Your QUBIC, on your computer' },
+      { property: 'og:description', content: 'A desktop wallet that stays yours. Your keys never leave your device.' },
+      { property: 'og:image', content: '/og-image-dark.png' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Sigil — Your QUBIC, on your computer' },
+      { name: 'twitter:description', content: 'A desktop wallet that stays yours. Your keys never leave your device.' },
+      { name: 'twitter:image', content: '/og-image-dark.png' },
     ],
     links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Doto:wght@400;700&display=swap' },
     ],
   }),
   shellComponent: RootDocument,
