@@ -6,7 +6,7 @@ import { Features } from '#/components/Features'
 import { Mockup } from '#/components/Mockup'
 import { Deeplink } from '#/components/Deeplink'
 import { Security } from '#/components/Security'
-import { Download } from '#/components/Download'
+import { DownloadCta } from '#/components/DownloadCta'
 import { Footer } from '#/components/Footer'
 
 export const Route = createFileRoute('/')({ component: Home })
@@ -21,7 +21,7 @@ function Home() {
       <Mockup />
       <Deeplink />
       <Security />
-      <Download />
+      <DownloadCta />
       <Footer />
     </>
   )

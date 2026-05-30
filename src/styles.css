@@ -903,3 +903,175 @@ ul.brief li {
 }
 ul.brief li::before { content: '['; color: var(--text-secondary); position: absolute; left: 0; font-family: 'Space Mono', monospace; }
 ul.brief li::after  { content: ']'; color: var(--text-secondary); margin-left: 6px; font-family: 'Space Mono', monospace; }
+
+/* ========== Download CTA (home page) ========== */
+.download-cta-wrap {
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface);
+}
+.download-cta-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 48px; padding: 64px 0;
+}
+.download-cta-title {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 300;
+  font-size: 48px; color: var(--text-display);
+  letter-spacing: -0.02em; margin: 0 0 12px;
+}
+.download-cta-sub {
+  font-size: 16px; color: var(--text-secondary); margin: 0;
+}
+.download-cta-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+.download-cta-btn { white-space: nowrap; }
+@media (max-width: 720px) {
+  .download-cta-inner { flex-direction: column; align-items: flex-start; gap: 32px; padding: 48px 0; }
+  .download-cta-title { font-size: 36px; }
+  .download-cta-actions { flex-wrap: wrap; }
+}
+
+/* ========== Download page ========== */
+.dl-page { padding: 80px 0 48px; min-height: 60vh; }
+
+.dl-hero { margin-bottom: 56px; }
+.dl-eyebrow {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 20px;
+}
+.dl-title {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 300;
+  font-size: 80px; line-height: 0.95; letter-spacing: -0.03em;
+  color: var(--text-display); margin: 0 0 20px;
+}
+.dl-sub {
+  font-family: 'Space Mono', monospace; font-size: 12px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.dl-primary {
+  display: flex; align-items: center; gap: 24px;
+  padding: 32px; background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: 12px;
+  margin-bottom: 1px;
+}
+.dl-primary-symbol {
+  font-family: 'Space Mono', monospace; font-size: 32px;
+  color: var(--text-display); width: 48px; text-align: center; flex-shrink: 0;
+}
+.dl-primary-info { flex: 1; }
+.dl-primary-label {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 500;
+  font-size: 22px; color: var(--text-display); margin-bottom: 4px;
+}
+.dl-primary-note {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase;
+}
+.dl-primary-btn { flex-shrink: 0; }
+
+.dl-extras {
+  border: 1px solid var(--border-strong); border-top: none;
+  border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 48px;
+}
+.dl-extra-row {
+  display: flex; align-items: center; gap: 24px; padding: 16px 32px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none; transition: background 120ms ease-out;
+}
+.dl-extra-row:last-child { border-bottom: none; }
+.dl-extra-row:hover { background: var(--subtle); }
+.dl-extra-file {
+  font-family: 'Space Mono', monospace; font-size: 13px; color: var(--text-display); width: 160px; flex-shrink: 0;
+}
+.dl-extra-note {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.1em; color: var(--text-secondary); flex: 1; text-transform: uppercase;
+}
+.dl-extra-arrow { font-size: 14px; color: var(--text-secondary); }
+
+.dl-others-label {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-secondary); margin: 48px 0 16px;
+}
+.dl-others {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;
+  margin-bottom: 64px;
+}
+.dl-other {
+  display: flex; align-items: center; gap: 20px; padding: 28px;
+  background: var(--bg); text-decoration: none;
+  transition: background 120ms ease-out;
+}
+.dl-other:hover { background: var(--surface); }
+.dl-other-symbol {
+  font-family: 'Space Mono', monospace; font-size: 24px;
+  color: var(--text-secondary); width: 40px; flex-shrink: 0; text-align: center;
+}
+.dl-other-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.dl-other-label {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 500;
+  font-size: 18px; color: var(--text-display);
+}
+.dl-other-file {
+  font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text-primary);
+}
+.dl-other-note {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary);
+}
+.dl-other-arrow { font-size: 18px; color: var(--text-secondary); }
+
+.dl-notes {
+  display: flex; flex-direction: column; gap: 1px;
+  border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;
+  margin-bottom: 48px;
+}
+.dl-note {
+  display: flex; gap: 32px; padding: 20px 24px;
+  background: var(--surface); align-items: baseline;
+}
+.dl-note-key {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-secondary); flex-shrink: 0; width: 100px;
+}
+.dl-note-val {
+  font-size: 14px; color: var(--text-primary); line-height: 1.5;
+}
+.dl-note-val code {
+  font-family: 'Space Mono', monospace; font-size: 12px;
+  background: var(--elevated); padding: 1px 6px; border-radius: 3px;
+}
+.dl-inline-link {
+  color: var(--text-display); text-decoration: none;
+  border-bottom: 1px solid var(--border-strong);
+}
+.dl-inline-link:hover { border-color: var(--text-display); }
+
+.dl-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 32px; border-top: 1px solid var(--border-subtle);
+  margin-bottom: 80px;
+}
+.dl-meta-link {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-secondary); text-decoration: none;
+  transition: color 120ms ease-out;
+}
+.dl-meta-link:hover { color: var(--text-display); }
+
+@media (max-width: 720px) {
+  .dl-page { padding: 48px 0 32px; }
+  .dl-title { font-size: 52px; }
+  .dl-hero { margin-bottom: 40px; }
+  .dl-primary { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .dl-primary-btn { width: 100%; justify-content: center; }
+  .dl-others { grid-template-columns: 1fr; }
+  .dl-note { flex-direction: column; gap: 8px; }
+  .dl-note-key { width: auto; }
+}
