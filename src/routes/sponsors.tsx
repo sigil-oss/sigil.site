@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "#/components/Footer";
+import { Identicon } from "#/components/Identicon";
 import { Nav } from "#/components/Nav";
 import {
 	DONATION_IDENTITY,
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/sponsors")({
 		],
 	}),
 	loader: () => fetchSponsorData(),
+	staleTime: 5 * 60 * 1000,
 	component: SponsorsPage,
 });
 
@@ -96,7 +98,7 @@ function SponsorsPage() {
 					<div className="sp-list-wrap">
 						<div className="sp-section-label">[ CURRENT SPONSORS ]</div>
 						{sponsors.length > 0 ? (
-							<SponsorGrid sponsors={sponsors} />
+							<SponsorList sponsors={sponsors} />
 						) : (
 							<SponsorsEmptyState />
 						)}
@@ -196,21 +198,67 @@ function SponsorsPage() {
 	);
 }
 
-function SponsorGrid({ sponsors }: { sponsors: Sponsor[] }) {
+const MEDAL = ["🥇", "🥈", "🥉"] as const;
+
+function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
+	const podium = sponsors.slice(0, 3);
+	const rest = sponsors.slice(3);
+
+	// Podium order: #2 left, #1 centre (elevated), #3 right
+	const podiumOrder = [podium[1], podium[0], podium[2]].filter(
+		Boolean,
+	) as Sponsor[];
+	const podiumRanks = podiumOrder.map((sp) => sponsors.indexOf(sp));
+
 	return (
-		<div className="sp-sponsors-grid">
-			{sponsors.map((sp, i) => (
-				<div className="sp-sponsor" key={sp.identity}>
-					<span className="sp-sponsor-rank">
-						{String(i + 1).padStart(2, "0")}
-					</span>
-					<div className="sp-sponsor-info">
-						<div className="sp-sponsor-name">{sp.name}</div>
-						<div className="sp-sponsor-identity">{sp.identity}</div>
-					</div>
-					<span className="sp-sponsor-amount">{formatQu(sp.amountQu)}</span>
+		<div className="sp-list">
+			{/* Podium — top 3 */}
+			{podium.length > 0 && (
+				<div className="sp-podium">
+					{podiumOrder.map((sp, displayIdx) => {
+						const rank = podiumRanks[displayIdx];
+						const isFirst = rank === 0;
+						return (
+							<div
+								key={sp.identity}
+								className={`sp-podium-slot${isFirst ? " sp-podium-first" : ""}`}
+							>
+								<div className="sp-podium-medal">{MEDAL[rank]}</div>
+								<Identicon
+									seed={sp.identity}
+									size={isFirst ? 72 : 56}
+									radius={isFirst ? 18 : 14}
+									className="sp-podium-identicon"
+								/>
+								<div className="sp-podium-name">{sp.name}</div>
+								<div className="sp-podium-amount">{formatQu(sp.amountQu)}</div>
+								<div className="sp-podium-rank">
+									#{String(rank + 1).padStart(2, "0")}
+								</div>
+							</div>
+						);
+					})}
 				</div>
-			))}
+			)}
+
+			{/* Flat list — rank 4+ */}
+			{rest.length > 0 && (
+				<div className="sp-rest">
+					{rest.map((sp, i) => (
+						<div className="sp-row" key={sp.identity}>
+							<span className="sp-row-rank">
+								{String(i + 4).padStart(2, "0")}
+							</span>
+							<Identicon seed={sp.identity} size={36} radius={8} />
+							<div className="sp-row-info">
+								<span className="sp-row-name">{sp.name}</span>
+								<span className="sp-row-identity">{sp.identity}</span>
+							</div>
+							<span className="sp-row-amount">{formatQu(sp.amountQu)}</span>
+						</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -218,39 +266,16 @@ function SponsorGrid({ sponsors }: { sponsors: Sponsor[] }) {
 function SponsorsEmptyState() {
 	return (
 		<div className="sp-empty">
-			<div className="sp-empty-mark">
-				<svg
-					viewBox="0 0 120 120"
-					xmlns="http://www.w3.org/2000/svg"
-					aria-hidden="true"
-				>
-					<title>empty</title>
-					<rect
-						x="10"
-						y="10"
-						width="28"
-						height="28"
-						rx="6"
-						fill="var(--border-strong)"
+			<div className="sp-empty-identicons">
+				{["PLACEHOLDER_A", "PLACEHOLDER_B", "PLACEHOLDER_C"].map((seed) => (
+					<Identicon
+						key={seed}
+						seed={seed}
+						size={48}
+						radius={12}
+						style={{ opacity: 0.3 }}
 					/>
-					<rect
-						x="46"
-						y="46"
-						width="28"
-						height="28"
-						rx="6"
-						fill="var(--error)"
-						opacity="0.5"
-					/>
-					<rect
-						x="82"
-						y="82"
-						width="28"
-						height="28"
-						rx="6"
-						fill="var(--border-strong)"
-					/>
-				</svg>
+				))}
 			</div>
 			<div className="sp-empty-title">No sponsors yet</div>
 			<p className="sp-empty-sub">

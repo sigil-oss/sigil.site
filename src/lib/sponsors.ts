@@ -1,5 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let _cache: { data: SponsorData; at: number } | null = null;
+
 export const DONATION_IDENTITY =
 	"UVYAOYTNYCRBVFBHNFIJUEOUEPEDIDUWWEAXKFSJEBJVASCQEROJOVOEEATL";
 
@@ -52,6 +55,7 @@ async function fetchAllTransactions(): Promise<QubicTx[]> {
 
 export const fetchSponsorData = createServerFn().handler(
 	async (): Promise<SponsorData> => {
+		if (_cache && Date.now() - _cache.at < CACHE_TTL) return _cache.data;
 		try {
 			const [txs, nameMap] = await Promise.all([
 				fetchAllTransactions(),
@@ -84,7 +88,9 @@ export const fetchSponsorData = createServerFn().handler(
 				}));
 
 			const totalQu = sponsors.reduce((s, sp) => s + sp.amountQu, 0);
-			return { sponsors, totalQu, donationCount };
+			const data = { sponsors, totalQu, donationCount };
+			_cache = { data, at: Date.now() };
+			return data;
 		} catch {
 			return { sponsors: [], totalQu: 0, donationCount: 0 };
 		}

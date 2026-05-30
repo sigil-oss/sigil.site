@@ -23,6 +23,7 @@ export const Route = createFileRoute("/download")({
 		],
 	}),
 	loader: () => fetchReleaseData(),
+	staleTime: 5 * 60 * 1000,
 	component: DownloadPage,
 });
 
