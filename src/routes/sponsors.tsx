@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Footer } from "#/components/Footer";
 import { Identicon } from "#/components/Identicon";
 import { Nav } from "#/components/Nav";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/sponsors")({
 			{
 				name: "description",
 				content:
-					"Sigil is free and open source. Support development by donating QUBIC directly on-chain.",
+					"Sigil is free and open source. Support development by sending QU directly on-chain — no accounts, no middlemen.",
 			},
 		],
 	}),
@@ -35,68 +36,53 @@ function SponsorsPage() {
 				<div className="wrap">
 					{/* Hero */}
 					<div className="sp-hero">
-						<div className="sp-eyebrow">[ SUPPORT SIGIL ]</div>
+						<div className="sp-eyebrow">[ SPONSORS ]</div>
 						<h1 className="sp-title">
-							Free to use.
+							Built in the open.
 							<br />
-							<span className="doto">Open</span> to support.
+							Kept alive by <span className="doto">you</span>.
 						</h1>
 						<p className="sp-sub">
-							Sigil is built in the open, charges nothing, and keeps no
-							analytics on your keys. If it's useful to you, the best way to say
-							thanks is to send some QU directly on-chain — no middlemen, no
-							subscriptions, no promises beyond keeping the wallet good.
+							Sigil charges nothing and tracks nothing. If it saves you time or
+							gives you peace of mind, you can say thanks directly on-chain — no
+							accounts, no payment processors, no promises in return.
 						</p>
 
-						{/* Stats */}
-						{(sponsors.length > 0 || donationCount > 0) && (
-							<div className="dl-stats" style={{ marginTop: 40 }}>
-								<div className="dl-stat">
-									<span className="dl-stat-val">{sponsors.length}</span>
-									<span className="dl-stat-label">SPONSORS</span>
-								</div>
-								{totalQu > 0 && (
-									<div className="dl-stat">
-										<span className="dl-stat-val">{formatQu(totalQu)}</span>
-										<span className="dl-stat-label">DONATED</span>
-									</div>
-								)}
-								{donationCount > 0 && (
-									<div className="dl-stat">
-										<span className="dl-stat-val">{donationCount}</span>
-										<span className="dl-stat-label">TRANSACTIONS</span>
-									</div>
-								)}
+						<div className="sp-stats-row">
+							<div className="sp-stat-item">
+								<span className="sp-stat-val">
+									{sponsors.length > 0 ? sponsors.length : "—"}
+								</span>
+								<span className="sp-stat-label">SPONSORS</span>
 							</div>
-						)}
+							<div className="sp-stat-sep" />
+							<div className="sp-stat-item">
+								<span className="sp-stat-val">
+									{totalQu > 0 ? formatQu(totalQu) : "—"}
+								</span>
+								<span className="sp-stat-label">DONATED</span>
+							</div>
+							<div className="sp-stat-sep" />
+							<div className="sp-stat-item">
+								<span className="sp-stat-val">
+									{donationCount > 0 ? donationCount : "—"}
+								</span>
+								<span className="sp-stat-label">TRANSACTIONS</span>
+							</div>
+							<div className="sp-stat-sep" />
+							<div className="sp-stat-item">
+								<span className="sp-stat-val">FREE</span>
+								<span className="sp-stat-label">FOREVER</span>
+							</div>
+						</div>
 					</div>
 
 					{/* Donation address */}
-					<div className="sp-address-card">
-						<div className="sp-address-label">
-							<span className="sp-address-tag">[ DONATION ADDRESS ]</span>
-							<span className="sp-address-note">
-								Any QU sent here is tracked on-chain and credited to your
-								address in the sponsors list below.
-							</span>
-						</div>
-						<div className="sp-address-value">{DONATION_IDENTITY}</div>
-						<button
-							type="button"
-							className="sp-copy-btn"
-							onClick={() => {
-								navigator.clipboard
-									.writeText(DONATION_IDENTITY)
-									.catch(() => {});
-							}}
-						>
-							COPY ADDRESS
-						</button>
-					</div>
+					<AddressBlock />
 
 					{/* Sponsors list */}
-					<div className="sp-list-wrap">
-						<div className="sp-section-label">[ CURRENT SPONSORS ]</div>
+					<div className="sp-section">
+						<div className="sp-section-eyebrow">[ WHO'S SUPPORTING ]</div>
 						{sponsors.length > 0 ? (
 							<SponsorList sponsors={sponsors} />
 						) : (
@@ -104,82 +90,100 @@ function SponsorsPage() {
 						)}
 					</div>
 
-					{/* How to donate */}
-					<div className="sp-how">
-						<div className="sp-section-label">[ HOW TO DONATE ]</div>
+					{/* How it works */}
+					<div className="sp-section">
+						<div className="sp-section-eyebrow">[ HOW IT WORKS ]</div>
 						<div className="sp-steps">
 							<div className="sp-step">
 								<div className="sp-step-num">01</div>
-								<div className="sp-step-h">Open Sigil</div>
-								<p className="sp-step-b">
-									Make sure your wallet is unlocked and you have some QU to
-									send.
-								</p>
+								<div className="sp-step-body">
+									<div className="sp-step-h">Copy the address above</div>
+									<p className="sp-step-b">
+										One click — it's in your clipboard.
+									</p>
+								</div>
 							</div>
 							<div className="sp-step">
 								<div className="sp-step-num">02</div>
-								<div className="sp-step-h">Go to Send</div>
-								<p className="sp-step-b">
-									Paste the address above into the recipient field. Any amount
-									is welcome.
-								</p>
+								<div className="sp-step-body">
+									<div className="sp-step-h">Open Sigil → Send</div>
+									<p className="sp-step-b">
+										Paste the address, enter an amount. Any size is appreciated.
+									</p>
+								</div>
 							</div>
 							<div className="sp-step">
 								<div className="sp-step-num">03</div>
-								<div className="sp-step-h">Confirm and sign</div>
-								<p className="sp-step-b">
-									Review the transaction, sign it, and you're done. The chain
-									does the rest.
-								</p>
+								<div className="sp-step-body">
+									<div className="sp-step-h">Sign the transaction</div>
+									<p className="sp-step-b">
+										Review it, sign it, done. The chain handles the rest — no
+										account needed.
+									</p>
+								</div>
 							</div>
 							<div className="sp-step">
 								<div className="sp-step-num">04</div>
-								<div className="sp-step-h">Optional: add your name</div>
-								<p className="sp-step-b">
-									Open a PR on the{" "}
-									<a
-										href="https://github.com/sigil-oss/sigil.app"
-										target="_blank"
-										rel="noopener noreferrer"
-										className="sp-inline-link"
-									>
-										GitHub repo
-									</a>{" "}
-									to add a display name to your address in{" "}
-									<code>sponsor-names.json</code>.
-								</p>
+								<div className="sp-step-body">
+									<div className="sp-step-h">Add your name (optional)</div>
+									<p className="sp-step-b">
+										Your address shows here by default. To use a name, open a PR
+										to{" "}
+										<a
+											href="https://github.com/sigil-oss/sigil.app/blob/main/sponsor-names.json"
+											target="_blank"
+											rel="noopener noreferrer"
+											className="sp-inline-link"
+										>
+											sponsor-names.json
+										</a>
+										.
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
 
 					{/* Transparency */}
 					<div className="sp-transparency">
-						<div className="sp-transparency-label">[ TRANSPARENCY ]</div>
-						<p className="sp-transparency-body">
-							Every donation is a public on-chain transaction — verifiable by
-							anyone on the Qubic network. There is no company, no legal entity,
-							and no off-chain payment processor involved. Funds go directly to
-							the wallet controlled by the maintainer and are used for
-							development costs, tooling, and infrastructure. There is no
-							commitment to specific deliverables in exchange for donations.
-						</p>
-						<div className="sp-transparency-links">
-							<a
-								href={`https://explorer.qubic.org/network/address/${DONATION_IDENTITY}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="sp-transparency-link"
-							>
-								View on Qubic Explorer ↗
-							</a>
-							<a
-								href="https://github.com/sigil-oss/sigil.app/blob/main/sponsor-names.json"
-								target="_blank"
-								rel="noopener noreferrer"
-								className="sp-transparency-link"
-							>
-								sponsor-names.json ↗
-							</a>
+						<div className="sp-transparency-row">
+							<div className="sp-transparency-text">
+								<div className="sp-transparency-label">
+									[ ON-CHAIN · TRANSPARENT ]
+								</div>
+								<p className="sp-transparency-body">
+									Every donation is a public Qubic transaction. No company, no
+									legal entity, no escrow. Funds go to the maintainer's wallet
+									and cover development costs and infrastructure. No
+									deliverables are promised in exchange.
+								</p>
+							</div>
+							<div className="sp-transparency-links">
+								<a
+									href={`https://explorer.qubic.org/network/address/${DONATION_IDENTITY}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="sp-transparency-link"
+								>
+									Qubic Explorer ↗
+								</a>
+								<a
+									href="https://github.com/sigil-oss/sigil.app/blob/main/sponsor-names.json"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="sp-transparency-link"
+								>
+									sponsor-names.json ↗
+								</a>
+								<a
+									href="https://github.com/sigil-oss/sigil.app"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="sp-transparency-link"
+								>
+									Source code ↗
+								</a>
+							</div>
 						</div>
 					</div>
 
@@ -198,6 +202,48 @@ function SponsorsPage() {
 	);
 }
 
+function AddressBlock() {
+	const [copied, setCopied] = useState(false);
+
+	const copy = () => {
+		navigator.clipboard.writeText(DONATION_IDENTITY).catch(() => {});
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	// Split into groups of 8 for readability
+	const chunks = DONATION_IDENTITY.match(/.{1,8}/g) ?? [];
+
+	return (
+		<div className="sp-addr-block">
+			<div className="sp-addr-top">
+				<div className="sp-addr-meta">
+					<span className="sp-addr-scheme">qubic://</span>
+					<span className="sp-addr-title">Send QU to support Sigil</span>
+				</div>
+				<button
+					type="button"
+					className={`sp-addr-copy${copied ? " sp-addr-copied" : ""}`}
+					onClick={copy}
+				>
+					{copied ? "COPIED ✓" : "COPY"}
+				</button>
+			</div>
+			<div className="sp-addr-code">
+				{chunks.map((chunk, i) => (
+					<span
+						key={chunk}
+						className={`sp-addr-chunk${i % 2 === 0 ? "" : " sp-addr-chunk-dim"}`}
+					>
+						{chunk}
+					</span>
+				))}
+			</div>
+			<div className="sp-addr-hint">Open Sigil → Send → paste this address</div>
+		</div>
+	);
+}
+
 function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
 	const podium = sponsors.slice(0, 3);
 	const rest = sponsors.slice(3);
@@ -210,7 +256,6 @@ function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
 
 	return (
 		<div className="sp-list">
-			{/* Podium — top 3 */}
 			{podium.length > 0 && (
 				<div className="sp-podium">
 					{podiumOrder.map((sp, displayIdx) => {
@@ -238,7 +283,6 @@ function SponsorList({ sponsors }: { sponsors: Sponsor[] }) {
 				</div>
 			)}
 
-			{/* Flat list — rank 4+ */}
 			{rest.length > 0 && (
 				<div className="sp-rest">
 					{rest.map((sp, i) => (
@@ -264,20 +308,22 @@ function SponsorsEmptyState() {
 	return (
 		<div className="sp-empty">
 			<div className="sp-empty-identicons">
-				{["PLACEHOLDER_A", "PLACEHOLDER_B", "PLACEHOLDER_C"].map((seed) => (
-					<Identicon
-						key={seed}
-						seed={seed}
-						size={48}
-						radius={12}
-						style={{ opacity: 0.3 }}
-					/>
-				))}
+				{["SEED_A_PLACEHOLDER", "SEED_B_PLACEHOLDER", "SEED_C_PLACEHOLDER"].map(
+					(seed) => (
+						<Identicon
+							key={seed}
+							seed={seed}
+							size={48}
+							radius={12}
+							style={{ opacity: 0.25 }}
+						/>
+					),
+				)}
 			</div>
-			<div className="sp-empty-title">No sponsors yet</div>
+			<div className="sp-empty-title">No sponsors yet — be the first.</div>
 			<p className="sp-empty-sub">
-				Be the first to support Sigil. Donations of any size show up here once
-				the transaction confirms on-chain.
+				Copy the address above, open Sigil, and send any amount. Your address
+				will appear here once the transaction confirms.
 			</p>
 		</div>
 	);
