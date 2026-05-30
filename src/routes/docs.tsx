@@ -81,9 +81,9 @@ function DocsPage() {
             control. That's the whole interface.
           </p>
           <p>
-            No SDK is strictly required — the protocol is small enough to drop into
-            any JavaScript, Python, or shell context. Build the URI, open it, listen
-            for the callback.
+            The quickest path is the official{' '}
+            <a className="doc-link" href="https://github.com/sigil-oss/sigil.connect" target="_blank" rel="noopener noreferrer">@sigil-oss/connect</a>{' '}
+            SDK — it builds envelopes, signs them, and parses callback responses. Or build the URI yourself: the protocol is small enough to drop into any JS, Python, or shell context.
           </p>
 
           <div className="callout info">
@@ -99,58 +99,65 @@ function DocsPage() {
             One URI, one callback. Sigil registers the <code className="inline">sigil://</code>{' '}
             scheme with the OS; opening such a URI brings Sigil to the foreground with your request.
           </p>
-          <pre className="doc-pre"><span className="pre-label">URI SHAPE</span><span className="t-kw">sigil</span>://<span className="t-kw">v1</span>/<span className="t-kw">request</span>?<span className="t-key">d</span>={'<'}<span className="t-com">base64url-encoded JSON payload</span>{'>'}{'\n'}                   &amp;<span className="t-key">cb</span>={'<'}<span className="t-com">optional HTTPS callback URL</span>{'>'}</pre>
+          <pre className="doc-pre"><span className="pre-label">URI SHAPE</span><span className="t-kw">sigil</span>://<span className="t-kw">v1</span>/<span className="t-kw">request</span>?<span className="t-key">d</span>={'<'}<span className="t-com">base64url-encoded JSON envelope</span>{'>'}{'\n'}                   [&amp;<span className="t-key">cb</span>={'<'}<span className="t-com">optional HTTPS callback URL</span>{'>'}]</pre>
           <ul className="brief">
             <li>Scheme must be <code className="inline">sigil</code></li>
-            <li>Host must be <code className="inline">v1</code> (version)</li>
-            <li>Path must be <code className="inline">/request</code></li>
-            <li>Query param <code className="inline">d</code> = base64url of your JSON payload (no padding)</li>
-            <li>Query param <code className="inline">cb</code> = where Sigil POSTs the result (optional)</li>
+            <li>Host must be <code className="inline">v1</code>, path must be <code className="inline">/request</code></li>
+            <li><code className="inline">d</code> = base64url (no padding) of a JSON envelope: <code className="inline">{'{ request, callback?, proof? }'}</code></li>
+            <li>Callback can be set in the envelope's <code className="inline">callback</code> field or via the <code className="inline">&amp;cb=</code> query param — if both are present they must match</li>
+            <li>Envelope max size: 8 192 bytes (base64)</li>
           </ul>
 
           <h3 id="flow">End-to-end flow</h3>
           <ol style={{ paddingLeft: 20, lineHeight: 1.7 }}>
-            <li><strong>Build your JSON payload</strong> (a transfer, a contract call, a message to sign…) including a fresh <code className="inline">nonce</code> and your dapp identity.</li>
-            <li><strong>Base64url-encode the JSON</strong> (no padding), put it in <code className="inline">?d=</code>.</li>
-            <li><strong>Spin up a callback endpoint</strong> if you want a structured response, and put its HTTPS URL in <code className="inline">?cb=</code>.</li>
-            <li><strong>Open the URI</strong> — <code className="inline">window.location.href = uri</code> in the browser.</li>
-            <li><strong>Sigil validates</strong> the URI in Rust, focuses its window, shows your request.</li>
-            <li><strong>User approves or rejects</strong>. Sigil POSTs JSON to your callback either way.</li>
+            <li><strong>Build your JSON envelope</strong>: <code className="inline">{'{ request: { type, nonce, dapp, ...fields }, callback? }'}</code></li>
+            <li><strong>Base64url-encode the envelope</strong> (no padding) and put it in <code className="inline">?d=</code>.</li>
+            <li><strong>Spin up a callback endpoint</strong> if you want a structured response — put its HTTPS URL in the envelope's <code className="inline">callback</code> field.</li>
+            <li><strong>Open the URI</strong> — <code className="inline">window.location.href = uri</code> in the browser, <code className="inline">open</code>/<code className="inline">xdg-open</code>/<code className="inline">start</code> from a native app.</li>
+            <li><strong>Sigil validates</strong> the URI in Rust, focuses its window, queues the request.</li>
+            <li><strong>User approves or rejects</strong>. Sigil POSTs the result to your callback from the Rust layer.</li>
           </ol>
 
           {/* Payload */}
           <h2 id="payload">Payload format</h2>
-          <p>These fields are required on every request, regardless of type:</p>
+          <p>The <code className="inline">d</code> parameter encodes a JSON envelope. The <code className="inline">request</code> object inside it contains these required fields on every request type:</p>
           <table className="fields">
             <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td>type <span className="req">*</span></td><td>string</td><td>One of <code className="inline">connect</code>, <code className="inline">transfer</code>, <code className="inline">sc_call</code>, <code className="inline">sign_message</code>, <code className="inline">verify_message</code></td></tr>
-              <tr><td>nonce <span className="req">*</span></td><td>string</td><td>8–128 chars. Must be unique per request — Sigil rejects duplicates as replays</td></tr>
-              <tr><td>dapp.origin <span className="req">*</span></td><td>string</td><td>Your origin, e.g. <code className="inline">https://yourapp.example</code>. Must be a valid URL</td></tr>
-              <tr><td>dapp.name</td><td>string</td><td>Display name shown to the user. Recommended</td></tr>
-              <tr><td>exp</td><td>integer</td><td>Unix seconds. If present and in the past, request is rejected</td></tr>
+              <tr><td>nonce <span className="req">*</span></td><td>string</td><td>16–128 chars, alphanumeric or <code className="inline">-_=+</code>. Must be unique — Sigil tracks seen nonces for 1 hour and rejects replays</td></tr>
+              <tr><td>dapp.origin <span className="req">*</span></td><td>string</td><td>Must be a valid <strong>HTTPS</strong> URL, e.g. <code className="inline">https://yourapp.example</code></td></tr>
+              <tr><td>dapp.name</td><td>string</td><td>Display name shown to the user. Strongly recommended</td></tr>
+              <tr><td>dapp.icon</td><td>string</td><td>URL to the dApp's icon. Optional</td></tr>
+              <tr><td>exp</td><td>integer</td><td>Unix seconds. Defaults to 5 minutes from receipt if omitted. Max 1 hour from now — requests further out are rejected</td></tr>
             </tbody>
           </table>
 
           <h3 id="encoding">Encoding the URI</h3>
-          <p>Sigil expects <strong>URL-safe base64 without padding</strong> — the same flavor used by JWTs.</p>
-          <pre className="doc-pre"><span className="pre-label">JAVASCRIPT</span><span className="t-kw">function</span> <span className="t-key">encodePayload</span>(payload) {'{'}
-  <span className="t-kw">const</span> b64 = <span className="t-key">btoa</span>(<span className="t-key">JSON</span>.stringify(payload));
-  <span className="t-com">// convert to base64url + strip padding</span>
-  <span className="t-kw">return</span> b64.replaceAll(<span className="t-str">'+'</span>, <span className="t-str">'-'</span>)
-            .replaceAll(<span className="t-str">'/'</span>, <span className="t-str">'_'</span>)
-            .replaceAll(<span className="t-str">'='</span>, <span className="t-str">''</span>);
+          <p>Encode the <strong>envelope</strong> (not just the request) with <strong>URL-safe base64 without padding</strong>.</p>
+          <pre className="doc-pre"><span className="pre-label">JAVASCRIPT</span><span className="t-kw">function</span> <span className="t-key">b64url</span>(str) {'{'}
+  <span className="t-kw">return</span> <span className="t-key">btoa</span>(str)
+    .replaceAll(<span className="t-str">'+'</span>, <span className="t-str">'-'</span>)
+    .replaceAll(<span className="t-str">'/'</span>, <span className="t-str">'_'</span>)
+    .replaceAll(<span className="t-str">'='</span>, <span className="t-str">''</span>);
 {'}'}
 
-<span className="t-kw">function</span> <span className="t-key">buildSigilUri</span>(payload, callback) {'{'}
-  <span className="t-kw">const</span> params = <span className="t-kw">new</span> <span className="t-key">URLSearchParams</span>({'{'}  d: <span className="t-key">encodePayload</span>(payload)  {'}'});
-  <span className="t-kw">if</span> (callback) params.set(<span className="t-str">'cb'</span>, callback);
-  <span className="t-kw">return</span> <span className="t-str">`sigil://v1/request?${'{'}params{'}'}`</span>;
+<span className="t-kw">function</span> <span className="t-key">buildSigilUri</span>(request, callback) {'{'}
+  <span className="t-com">// Wrap request in the envelope — callback lives here, not as a query param</span>
+  <span className="t-kw">const</span> envelope = {'{'} request, callback: callback ?? <span className="t-kw">null</span> {'}'};
+  <span className="t-kw">const</span> d = <span className="t-key">b64url</span>(<span className="t-key">JSON</span>.stringify(envelope));
+  <span className="t-kw">return</span> <span className="t-str">`sigil://v1/request?d=${'{'}d{'}'}`</span>;
 {'}'}</pre>
+
+          {/* Trust */}
+          <div className="callout info" style={{ marginTop: 32 }}>
+            <div className="callout-tag">[ TRUST LEVELS ]</div>
+            <p>Requests can be unsigned (<code className="inline">legacy_unverified</code> — metadata is self-reported) or carry an ES256 <code className="inline">proof</code> signed by a registered dApp issuer. If a proof is present but the signature is invalid, or the issuer is in the registry but the origin doesn't match, <strong>Sigil blocks approval</strong>. Unsigned requests can still be reviewed and approved — the UI shows the trust level clearly. Use <a className="doc-link" href="https://github.com/sigil-oss/sigil.connect" target="_blank" rel="noopener noreferrer">@sigil-oss/connect</a> to sign envelopes.</p>
+          </div>
 
           {/* Callback */}
           <h2 id="callback">Receiving the result</h2>
-          <p>Sigil makes an HTTP <code className="inline">POST</code> with a JSON body to your <code className="inline">cb</code> URL.</p>
+          <p>Sigil makes an HTTP <code className="inline">POST</code> with a JSON body to your callback URL from the Rust layer. If delivery fails, the result stays recoverable in request history for retry.</p>
           <h3>Constraints on <code className="inline">cb</code></h3>
           <ul className="brief">
             <li>Must be <code className="inline">https://</code> in production</li>
@@ -197,8 +204,9 @@ function DocsPage() {
               <tr><td>type <span className="req">*</span></td><td>string</td><td><code className="inline">"sc_call"</code></td></tr>
               <tr><td>contract_index <span className="req">*</span></td><td>integer</td><td>0–63</td></tr>
               <tr><td>input_type <span className="req">*</span></td><td>integer</td><td>Non-negative. The procedure number on the contract</td></tr>
-              <tr><td>input</td><td>string</td><td>Base64-encoded input bytes (if the procedure takes input)</td></tr>
+              <tr><td>payload</td><td>string</td><td>Base64-encoded input bytes for the call (if the procedure takes input)</td></tr>
               <tr><td>amount</td><td>integer</td><td>QU attached to the call, if any</td></tr>
+              <tr><td>from</td><td>string</td><td>Prefer a specific account identity. Optional — user can override</td></tr>
             </tbody>
           </table>
 
@@ -209,7 +217,7 @@ function DocsPage() {
             <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td>type <span className="req">*</span></td><td>string</td><td><code className="inline">"sign_message"</code></td></tr>
-              <tr><td>message <span className="req">*</span></td><td>string</td><td>Non-empty. Shown verbatim to the user before they sign</td></tr>
+              <tr><td>message <span className="req">*</span></td><td>string</td><td>Non-empty, max 2 048 characters. Shown verbatim to the user</td></tr>
             </tbody>
           </table>
           <pre className="doc-pre"><span className="pre-label">APPROVE CALLBACK</span>{'{'}{'\n'}  <span className="t-key">"status"</span>: <span className="t-str">"signed"</span>,{'\n'}  <span className="t-key">"identity"</span>: <span className="t-str">"{'<'}signing identity{'>'}"</span>,{'\n'}  <span className="t-key">"signature"</span>: <span className="t-str">"{'<'}signature bytes, base64{'>'}"</span>,{'\n'}  <span className="t-key">"public_key"</span>: <span className="t-str">"{'<'}public key, base64{'>'}"</span>{'\n'}{'}'}</pre>
@@ -235,9 +243,11 @@ function DocsPage() {
             <li>Scheme isn't <code className="inline">sigil</code> or host isn't <code className="inline">v1</code></li>
             <li>Missing <code className="inline">d</code> parameter or invalid base64url</li>
             <li>Missing <code className="inline">type</code>, <code className="inline">nonce</code>, or <code className="inline">dapp.origin</code></li>
-            <li>Unknown <code className="inline">type</code> or nonce outside 8–128 chars</li>
-            <li><code className="inline">exp</code> is set and already in the past</li>
-            <li><code className="inline">cb</code> isn't HTTPS (except localhost/127.0.0.1)</li>
+            <li>Unknown <code className="inline">type</code>, or nonce outside 16–128 chars or invalid charset</li>
+            <li><code className="inline">dapp.origin</code> scheme isn't <code className="inline">https</code></li>
+            <li><code className="inline">exp</code> is in the past, or more than 1 hour from now</li>
+            <li>Callback isn't HTTPS (except <code className="inline">http://localhost</code> / <code className="inline">http://127.0.0.1</code> for local dev)</li>
+            <li>Callback targets a private or loopback address (other than localhost)</li>
             <li>Nonce was used before (replay protection)</li>
             <li>Type-specific validation fails</li>
           </ul>
@@ -246,18 +256,20 @@ function DocsPage() {
           <h2 id="full">Full working example</h2>
           <p>Plain HTML page that asks Sigil to sign a login message.</p>
           <pre className="doc-pre"><span className="pre-label">CLIENT</span>{`document.getElementById('signin').addEventListener('click', () => {
-  const payload = {
+  const request = {
     type: 'sign_message',
-    nonce: crypto.randomUUID(),
-    dapp: { name: 'Acme', origin: window.location.origin },
+    nonce: crypto.randomUUID(),   // 16+ chars, alphanumeric
+    dapp: { name: 'Acme', origin: 'https://acme.example' },
     message: \`Sign in to Acme · \${new Date().toISOString()}\`,
-    exp: Math.floor(Date.now() / 1000) + 300,
+    exp: Math.floor(Date.now() / 1000) + 300,  // 5 min
   };
-  const d = btoa(JSON.stringify(payload))
+
+  // Wrap in envelope — callback goes here, not as a query param
+  const envelope = { request, callback: 'https://acme.example/sigil/callback' };
+  const d = btoa(JSON.stringify(envelope))
     .replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
-  window.location.href = \`sigil://v1/request?d=\${d}&cb=\${
-    encodeURIComponent('https://acme.example/sigil/callback')
-  }\`;
+
+  window.location.href = \`sigil://v1/request?d=\${d}\`;
 });`}</pre>
 
           <div className="callout info">
