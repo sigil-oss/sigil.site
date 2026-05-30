@@ -14,6 +14,11 @@ import { Route as DownloadRouteImport } from './routes/download'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsSdkRouteImport } from './routes/docs/sdk'
+import { Route as DocsRequestTypesRouteImport } from './routes/docs/request-types'
+import { Route as DocsReferenceRouteImport } from './routes/docs/reference'
+import { Route as DocsPayloadRouteImport } from './routes/docs/payload'
 
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
@@ -40,41 +45,110 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsSdkRoute = DocsSdkRouteImport.update({
+  id: '/sdk',
+  path: '/sdk',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsRequestTypesRoute = DocsRequestTypesRouteImport.update({
+  id: '/request-types',
+  path: '/request-types',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsReferenceRoute = DocsReferenceRouteImport.update({
+  id: '/reference',
+  path: '/reference',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsPayloadRoute = DocsPayloadRouteImport.update({
+  id: '/payload',
+  path: '/payload',
+  getParentRoute: () => DocsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteWithChildren
   '/download': typeof DownloadRoute
   '/sponsors': typeof SponsorsRoute
+  '/docs/payload': typeof DocsPayloadRoute
+  '/docs/reference': typeof DocsReferenceRoute
+  '/docs/request-types': typeof DocsRequestTypesRoute
+  '/docs/sdk': typeof DocsSdkRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
-  '/docs': typeof DocsRoute
   '/download': typeof DownloadRoute
   '/sponsors': typeof SponsorsRoute
+  '/docs/payload': typeof DocsPayloadRoute
+  '/docs/reference': typeof DocsReferenceRoute
+  '/docs/request-types': typeof DocsRequestTypesRoute
+  '/docs/sdk': typeof DocsSdkRoute
+  '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteWithChildren
   '/download': typeof DownloadRoute
   '/sponsors': typeof SponsorsRoute
+  '/docs/payload': typeof DocsPayloadRoute
+  '/docs/reference': typeof DocsReferenceRoute
+  '/docs/request-types': typeof DocsRequestTypesRoute
+  '/docs/sdk': typeof DocsSdkRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/brand' | '/docs' | '/download' | '/sponsors'
+  fullPaths:
+    | '/'
+    | '/brand'
+    | '/docs'
+    | '/download'
+    | '/sponsors'
+    | '/docs/payload'
+    | '/docs/reference'
+    | '/docs/request-types'
+    | '/docs/sdk'
+    | '/docs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/brand' | '/docs' | '/download' | '/sponsors'
-  id: '__root__' | '/' | '/brand' | '/docs' | '/download' | '/sponsors'
+  to:
+    | '/'
+    | '/brand'
+    | '/download'
+    | '/sponsors'
+    | '/docs/payload'
+    | '/docs/reference'
+    | '/docs/request-types'
+    | '/docs/sdk'
+    | '/docs'
+  id:
+    | '__root__'
+    | '/'
+    | '/brand'
+    | '/docs'
+    | '/download'
+    | '/sponsors'
+    | '/docs/payload'
+    | '/docs/reference'
+    | '/docs/request-types'
+    | '/docs/sdk'
+    | '/docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrandRoute: typeof BrandRoute
-  DocsRoute: typeof DocsRoute
+  DocsRoute: typeof DocsRouteWithChildren
   DownloadRoute: typeof DownloadRoute
   SponsorsRoute: typeof SponsorsRoute
 }
@@ -116,13 +190,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/sdk': {
+      id: '/docs/sdk'
+      path: '/sdk'
+      fullPath: '/docs/sdk'
+      preLoaderRoute: typeof DocsSdkRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/request-types': {
+      id: '/docs/request-types'
+      path: '/request-types'
+      fullPath: '/docs/request-types'
+      preLoaderRoute: typeof DocsRequestTypesRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/reference': {
+      id: '/docs/reference'
+      path: '/reference'
+      fullPath: '/docs/reference'
+      preLoaderRoute: typeof DocsReferenceRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/payload': {
+      id: '/docs/payload'
+      path: '/payload'
+      fullPath: '/docs/payload'
+      preLoaderRoute: typeof DocsPayloadRouteImport
+      parentRoute: typeof DocsRoute
+    }
   }
 }
+
+interface DocsRouteChildren {
+  DocsPayloadRoute: typeof DocsPayloadRoute
+  DocsReferenceRoute: typeof DocsReferenceRoute
+  DocsRequestTypesRoute: typeof DocsRequestTypesRoute
+  DocsSdkRoute: typeof DocsSdkRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+}
+
+const DocsRouteChildren: DocsRouteChildren = {
+  DocsPayloadRoute: DocsPayloadRoute,
+  DocsReferenceRoute: DocsReferenceRoute,
+  DocsRequestTypesRoute: DocsRequestTypesRoute,
+  DocsSdkRoute: DocsSdkRoute,
+  DocsIndexRoute: DocsIndexRoute,
+}
+
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrandRoute: BrandRoute,
-  DocsRoute: DocsRoute,
+  DocsRoute: DocsRouteWithChildren,
   DownloadRoute: DownloadRoute,
   SponsorsRoute: SponsorsRoute,
 }
