@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "#/components/Footer";
 import { Nav } from "#/components/Nav";
+import {
+	DONATION_IDENTITY,
+	fetchSponsorData,
+	formatQu,
+	type Sponsor,
+} from "#/lib/sponsors";
 
 export const Route = createFileRoute("/sponsors")({
 	head: () => ({
@@ -13,13 +19,13 @@ export const Route = createFileRoute("/sponsors")({
 			},
 		],
 	}),
+	loader: () => fetchSponsorData(),
 	component: SponsorsPage,
 });
 
-const DONATION_IDENTITY =
-	"UVYAOYTNYCRBVFBHNFIJUEOUEPEDIDUWWEAXKFSJEBJVASCQEROJOVOEEATL";
-
 function SponsorsPage() {
+	const { sponsors, totalQu, donationCount } = Route.useLoaderData();
+
 	return (
 		<>
 			<Nav />
@@ -39,6 +45,28 @@ function SponsorsPage() {
 							thanks is to send some QU directly on-chain — no middlemen, no
 							subscriptions, no promises beyond keeping the wallet good.
 						</p>
+
+						{/* Stats */}
+						{(sponsors.length > 0 || donationCount > 0) && (
+							<div className="dl-stats" style={{ marginTop: 40 }}>
+								<div className="dl-stat">
+									<span className="dl-stat-val">{sponsors.length}</span>
+									<span className="dl-stat-label">SPONSORS</span>
+								</div>
+								{totalQu > 0 && (
+									<div className="dl-stat">
+										<span className="dl-stat-val">{formatQu(totalQu)}</span>
+										<span className="dl-stat-label">DONATED</span>
+									</div>
+								)}
+								{donationCount > 0 && (
+									<div className="dl-stat">
+										<span className="dl-stat-val">{donationCount}</span>
+										<span className="dl-stat-label">TRANSACTIONS</span>
+									</div>
+								)}
+							</div>
+						)}
 					</div>
 
 					{/* Donation address */}
@@ -47,7 +75,7 @@ function SponsorsPage() {
 							<span className="sp-address-tag">[ DONATION ADDRESS ]</span>
 							<span className="sp-address-note">
 								Any QU sent here is tracked on-chain and credited to your
-								address in the sponsors list.
+								address in the sponsors list below.
 							</span>
 						</div>
 						<div className="sp-address-value">{DONATION_IDENTITY}</div>
@@ -62,6 +90,16 @@ function SponsorsPage() {
 						>
 							COPY ADDRESS
 						</button>
+					</div>
+
+					{/* Sponsors list */}
+					<div className="sp-list-wrap">
+						<div className="sp-section-label">[ CURRENT SPONSORS ]</div>
+						{sponsors.length > 0 ? (
+							<SponsorGrid sponsors={sponsors} />
+						) : (
+							<SponsorsEmptyState />
+						)}
 					</div>
 
 					{/* How to donate */}
@@ -112,23 +150,16 @@ function SponsorsPage() {
 						</div>
 					</div>
 
-					{/* Sponsors list */}
-					<div className="sp-list-wrap">
-						<div className="sp-section-label">[ CURRENT SPONSORS ]</div>
-						<SponsorsEmptyState />
-					</div>
-
-					{/* Transparency note */}
+					{/* Transparency */}
 					<div className="sp-transparency">
 						<div className="sp-transparency-label">[ TRANSPARENCY ]</div>
 						<p className="sp-transparency-body">
-							Every donation to the address above is a public on-chain
-							transaction — verifiable by anyone on the Qubic network. There is
-							no company, no legal entity, and no off-chain payment processor
-							involved. Funds go directly to the wallet controlled by the
-							maintainer and are used for development costs, tooling, and
-							infrastructure. There is no commitment to specific deliverables in
-							exchange for donations.
+							Every donation is a public on-chain transaction — verifiable by
+							anyone on the Qubic network. There is no company, no legal entity,
+							and no off-chain payment processor involved. Funds go directly to
+							the wallet controlled by the maintainer and are used for
+							development costs, tooling, and infrastructure. There is no
+							commitment to specific deliverables in exchange for donations.
 						</p>
 						<div className="sp-transparency-links">
 							<a
@@ -162,6 +193,25 @@ function SponsorsPage() {
 			</div>
 			<Footer />
 		</>
+	);
+}
+
+function SponsorGrid({ sponsors }: { sponsors: Sponsor[] }) {
+	return (
+		<div className="sp-sponsors-grid">
+			{sponsors.map((sp, i) => (
+				<div className="sp-sponsor" key={sp.identity}>
+					<span className="sp-sponsor-rank">
+						{String(i + 1).padStart(2, "0")}
+					</span>
+					<div className="sp-sponsor-info">
+						<div className="sp-sponsor-name">{sp.name}</div>
+						<div className="sp-sponsor-identity">{sp.identity}</div>
+					</div>
+					<span className="sp-sponsor-amount">{formatQu(sp.amountQu)}</span>
+				</div>
+			))}
+		</div>
 	);
 }
 
