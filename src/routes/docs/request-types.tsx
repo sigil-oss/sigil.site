@@ -83,12 +83,50 @@ const VERIFY_MSG_CB = `{
 export const Route = createFileRoute("/docs/request-types")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Request Types" },
+			{
+				title:
+					"Sigil Request Types — connect, transfer, sc_call, sign_message, verify_message",
+			},
 			{
 				name: "description",
 				content:
-					"All five Sigil request types: connect, transfer, sc_call, sign_message, verify_message — fields and callback shapes.",
+					"All five Sigil QUBIC request types: connect wallet, transfer QU, sc_call smart contracts, sign_message for auth, verify_message — fields, constraints, and callback shapes.",
 			},
+			{
+				property: "og:title",
+				content:
+					"Sigil Request Types — connect, transfer, sc_call, sign_message, verify_message",
+			},
+			{
+				property: "og:description",
+				content:
+					"All five Sigil request types with field definitions and callback shapes: connect wallet, transfer QU, smart contract calls, message signing and verification.",
+			},
+			{
+				property: "og:url",
+				content: "https://sigilwallet.org/docs/request-types",
+			},
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil Request Types — connect, transfer, sc_call, sign_message, verify_message",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"All five Sigil request types with field definitions and callback shapes: connect wallet, transfer QU, smart contract calls, message signing and verification.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+		],
+		links: [
+			{ rel: "canonical", href: "https://sigilwallet.org/docs/request-types" },
 		],
 	}),
 	loader: async () => {

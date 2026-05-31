@@ -14,13 +14,43 @@ import {
 export const Route = createFileRoute("/download")({
 	head: () => ({
 		meta: [
-			{ title: "Download Sigil" },
+			{ title: "Download Sigil — Free QUBIC Wallet for Mac, Windows & Linux" },
 			{
 				name: "description",
 				content:
-					"Download Sigil for Mac, Windows, and Linux. Native app, open source, MIT licence.",
+					"Download Sigil for Mac, Windows, and Linux. Free, open-source QUBIC desktop wallet. MIT licensed. Auto-updates, signed releases.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Download Sigil — Free QUBIC Wallet for Mac, Windows & Linux",
+			},
+			{
+				property: "og:description",
+				content:
+					"Free, open-source QUBIC desktop wallet for Mac, Windows, and Linux. MIT licensed. Signed, verified releases.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/download" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Download Sigil — Free QUBIC Wallet for Mac, Windows & Linux",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"Free, open-source QUBIC desktop wallet for Mac, Windows, and Linux. MIT licensed. Signed, verified releases.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/download" }],
 	}),
 	loader: () => fetchReleaseData(),
 	staleTime: 5 * 60 * 1000,

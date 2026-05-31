@@ -104,13 +104,46 @@ handleRedirect();`;
 export const Route = createFileRoute("/docs/sdk")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — @sigil-oss/connect SDK" },
+			{
+				title:
+					"@sigil-oss/connect SDK — QUBIC dApp Integration for TypeScript",
+			},
 			{
 				name: "description",
 				content:
-					"Install and use the @sigil-oss/connect SDK: async sigilRequest() for zero-server dApps, or manual URI building with callback/redirect_uri delivery.",
+					"Install and use the @sigil-oss/connect TypeScript SDK: async sigilRequest() for zero-server dApps, or manual URI building with callback/redirect_uri delivery.",
+			},
+			{
+				property: "og:title",
+				content:
+					"@sigil-oss/connect SDK — QUBIC dApp Integration for TypeScript",
+			},
+			{
+				property: "og:description",
+				content:
+					"TypeScript SDK for Sigil: async sigilRequest(), URI building, callback parsing. Integrate QUBIC wallet signing into any web app.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/sdk" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"@sigil-oss/connect SDK — QUBIC dApp Integration for TypeScript",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"TypeScript SDK for Sigil: async sigilRequest(), URI building, callback parsing. Integrate QUBIC wallet signing into any web app.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/sdk" }],
 	}),
 	loader: async () => {
 		const [

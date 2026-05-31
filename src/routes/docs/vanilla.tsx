@@ -138,13 +138,46 @@ async function sendPayment(to, amount) {
 export const Route = createFileRoute("/docs/vanilla")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Vanilla JS Integration" },
+			{
+				title:
+					"Sigil Vanilla JS Integration — Add QUBIC Wallet Signing, No Framework",
+			},
 			{
 				name: "description",
 				content:
-					"Integrate Sigil into a vanilla JavaScript app with no build tools — CDN import, callback page setup, connect, sign-in, and transfer examples.",
+					"Integrate Sigil into a vanilla JavaScript app with no build tools. CDN import, callback page setup, connect wallet, sign-in, and transfer examples.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Sigil Vanilla JS Integration — Add QUBIC Wallet Signing, No Framework",
+			},
+			{
+				property: "og:description",
+				content:
+					"No framework, no build step required. CDN import or npm. Connect wallet, sign-in with Qubic, and request transfers in plain JavaScript.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/vanilla" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil Vanilla JS Integration — Add QUBIC Wallet Signing, No Framework",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"No framework, no build step required. CDN import or npm. Connect wallet, sign-in with Qubic, and request transfers in plain JavaScript.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/vanilla" }],
 	}),
 	loader: async () => {
 		const [

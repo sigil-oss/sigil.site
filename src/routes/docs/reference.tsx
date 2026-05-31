@@ -117,13 +117,46 @@ if (encoded) {
 export const Route = createFileRoute("/docs/reference")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Errors, Validation & Examples" },
+			{
+				title:
+					"Sigil Reference — Errors, Validation Codes & End-to-End Examples",
+			},
 			{
 				name: "description",
 				content:
-					"Rejection reasons, validation error codes, trust levels, and a complete end-to-end Sigil integration example.",
+					"Rejection reasons, validation error codes, trust levels, and complete end-to-end Sigil integration examples with server callback and redirect URI patterns.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Sigil Reference — Errors, Validation Codes & End-to-End Examples",
+			},
+			{
+				property: "og:description",
+				content:
+					"Rejection reasons, validation errors, trust levels, and complete end-to-end integration examples for the Sigil QUBIC wallet protocol.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/reference" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil Reference — Errors, Validation Codes & End-to-End Examples",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"Rejection reasons, validation errors, trust levels, and complete end-to-end integration examples for the Sigil QUBIC wallet protocol.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/reference" }],
 	}),
 	loader: async () => {
 		const [

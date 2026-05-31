@@ -261,13 +261,46 @@ export async function POST(req: Request) {
 export const Route = createFileRoute("/docs/react")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — React Integration" },
+			{
+				title:
+					"Sigil React Integration — Connect QUBIC Wallet in React & Next.js",
+			},
 			{
 				name: "description",
 				content:
-					"Integrate Sigil into a React app: useSigil hook, callback route setup for React Router and Next.js, connect button, sign-in with Qubic, and transfer examples.",
+					"Integrate Sigil into a React or Next.js app: useSigil hook, callback route setup, connect wallet button, sign-in with Qubic, and transfer examples.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Sigil React Integration — Connect QUBIC Wallet in React & Next.js",
+			},
+			{
+				property: "og:description",
+				content:
+					"useSigil hook, callback route setup for React Router and Next.js, connect wallet, sign-in with Qubic, and transfer components.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/react" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil React Integration — Connect QUBIC Wallet in React & Next.js",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"useSigil hook, callback route setup for React Router and Next.js, connect wallet, sign-in with Qubic, and transfer components.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/react" }],
 	}),
 	loader: async () => {
 		const [

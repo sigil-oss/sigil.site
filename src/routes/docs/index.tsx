@@ -23,13 +23,41 @@ const ENVELOPE_SHAPE = `interface SigilEnvelope {
 export const Route = createFileRoute("/docs/")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Overview & Protocol" },
+			{ title: "Sigil Docs — sigil:// Protocol Overview & Integration Guide" },
 			{
 				name: "description",
 				content:
-					"How the Sigil deep-link protocol works: URI shape, envelope format, and end-to-end signing flow.",
+					"How the Sigil deep-link protocol works: URI shape, envelope format, and end-to-end signing flow for QUBIC dApp integration.",
+			},
+			{
+				property: "og:title",
+				content: "Sigil Docs — sigil:// Protocol Overview & Integration Guide",
+			},
+			{
+				property: "og:description",
+				content:
+					"How the Sigil deep-link protocol works: URI shape, envelope format, and end-to-end signing flow for QUBIC dApp integration.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content: "Sigil Docs — sigil:// Protocol Overview & Integration Guide",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"How the Sigil deep-link protocol works: URI shape, envelope format, and end-to-end signing flow for QUBIC dApp integration.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs" }],
 	}),
 	loader: async () => {
 		const [uriHtml, envelopeHtml] = await Promise.all([

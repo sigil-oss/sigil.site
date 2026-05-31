@@ -3,13 +3,41 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/brand")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil — Brand Kit" },
+			{ title: "Sigil Brand Kit — Logos, Marks & Assets" },
 			{
 				name: "description",
 				content:
-					"The complete Sigil identity system. Mark, avatars, banners, typography, color, and usage rules.",
+					"The complete Sigil identity system. Block mark, avatars, social banners, typography, color palette, and usage rules. Free to use under MIT.",
+			},
+			{
+				property: "og:title",
+				content: "Sigil Brand Kit — Logos, Marks & Assets",
+			},
+			{
+				property: "og:description",
+				content:
+					"The complete Sigil identity system. Block mark, avatars, social banners, typography, color palette, and usage rules.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/brand" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content: "Sigil Brand Kit — Logos, Marks & Assets",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"The complete Sigil identity system. Block mark, avatars, social banners, typography, color palette, and usage rules.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/brand" }],
 	}),
 	component: BrandPage,
 });

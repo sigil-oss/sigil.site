@@ -13,13 +13,41 @@ import {
 export const Route = createFileRoute("/sponsors")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil — Sponsors" },
+			{ title: "Sponsors — Support Sigil, the Open-Source QUBIC Wallet" },
 			{
 				name: "description",
 				content:
 					"Sigil is free and open source. Support development by sending QU directly on-chain — no accounts, no middlemen.",
 			},
+			{
+				property: "og:title",
+				content: "Sponsors — Support Sigil, the Open-Source QUBIC Wallet",
+			},
+			{
+				property: "og:description",
+				content:
+					"Sigil is free and open source. Support development by sending QU directly on-chain — no accounts, no middlemen.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/sponsors" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content: "Sponsors — Support Sigil, the Open-Source QUBIC Wallet",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"Sigil is free and open source. Support development by sending QU directly on-chain — no accounts, no middlemen.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/sponsors" }],
 	}),
 	loader: () => fetchSponsorData(),
 	staleTime: 5 * 60 * 1000,

@@ -197,13 +197,46 @@ async function send() {
 export const Route = createFileRoute("/docs/vue")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Vue 3 Integration" },
+			{
+				title:
+					"Sigil Vue 3 Integration — Connect QUBIC Wallet in Vue & Nuxt",
+			},
 			{
 				name: "description",
 				content:
-					"Integrate Sigil into a Vue 3 app: useSigil composable, Vue Router and Nuxt.js callback setup, connect, sign-in, and transfer components.",
+					"Integrate Sigil into a Vue 3 or Nuxt app: useSigil composable, Vue Router and Nuxt callback setup, connect wallet, sign-in, and transfer components.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Sigil Vue 3 Integration — Connect QUBIC Wallet in Vue & Nuxt",
+			},
+			{
+				property: "og:description",
+				content:
+					"useSigil composable, Vue Router and Nuxt callback setup, connect wallet, sign-in with Qubic, and transfer single-file components.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/vue" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil Vue 3 Integration — Connect QUBIC Wallet in Vue & Nuxt",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"useSigil composable, Vue Router and Nuxt callback setup, connect wallet, sign-in with Qubic, and transfer single-file components.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/vue" }],
 	}),
 	loader: async () => {
 		const [

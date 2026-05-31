@@ -34,7 +34,7 @@ export const fetchReleaseData = createServerFn().handler(
 	async (): Promise<ReleaseData> => {
 		const headers: Record<string, string> = {
 			Accept: "application/vnd.github.v3+json",
-			"User-Agent": "sigil.site",
+			"User-Agent": "sigilwallet.org",
 		};
 		const token = process.env.GITHUB_TOKEN;
 		if (token) headers.Authorization = `Bearer ${token}`;

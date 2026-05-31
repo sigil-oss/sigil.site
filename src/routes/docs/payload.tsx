@@ -31,13 +31,46 @@ const REJECT_CB = `{
 export const Route = createFileRoute("/docs/payload")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Payload Format & Callback" },
+			{
+				title:
+					"Sigil Payload Format — sigil:// URI Encoding & Callback Delivery",
+			},
 			{
 				name: "description",
 				content:
-					"Required fields for every Sigil request, how to encode the URI, and how Sigil delivers callback results.",
+					"Required fields for every Sigil request, how to base64url-encode the envelope URI, delivery via server callback or redirect_uri, and trust levels.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Sigil Payload Format — sigil:// URI Encoding & Callback Delivery",
+			},
+			{
+				property: "og:description",
+				content:
+					"Required fields, base64url URI encoding, server callback vs redirect_uri delivery, and Sigil trust levels explained.",
+			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/payload" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil Payload Format — sigil:// URI Encoding & Callback Delivery",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"Required fields, base64url URI encoding, server callback vs redirect_uri delivery, and Sigil trust levels explained.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
 			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/payload" }],
 	}),
 	loader: async () => {
 		const [encodeFnHtml, rejectCbHtml] = await Promise.all([

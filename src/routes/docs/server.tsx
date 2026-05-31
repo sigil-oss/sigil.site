@@ -163,13 +163,46 @@ export async function POST(request: Request) {
 export const Route = createFileRoute("/docs/server")({
 	head: () => ({
 		meta: [
-			{ title: "Sigil Docs — Server-Side Integration" },
+			{
+				title:
+					"Sigil Server-Side Integration — Express & Next.js Callback Handling",
+			},
 			{
 				name: "description",
 				content:
+					"Receive and verify Sigil callback POSTs on your server. Express.js setup, nonce validation, sign-in with Qubic verification, and Next.js App Router API routes.",
+			},
+			{
+				property: "og:title",
+				content:
+					"Sigil Server-Side Integration — Express & Next.js Callback Handling",
+			},
+			{
+				property: "og:description",
+				content:
 					"Receive and verify Sigil callback POSTs on your server: Express.js setup, nonce validation, sign-in verification, and Next.js API routes.",
 			},
+			{ property: "og:url", content: "https://sigilwallet.org/docs/server" },
+			{
+				property: "og:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
+			{
+				name: "twitter:title",
+				content:
+					"Sigil Server-Side Integration — Express & Next.js Callback Handling",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"Receive and verify Sigil callback POSTs on your server: Express.js setup, nonce validation, sign-in verification, and Next.js API routes.",
+			},
+			{
+				name: "twitter:image",
+				content: "https://sigilwallet.org/og-image-dark.png",
+			},
 		],
+		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/server" }],
 	}),
 	loader: async () => {
 		const [
