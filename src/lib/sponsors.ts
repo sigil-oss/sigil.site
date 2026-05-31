@@ -4,7 +4,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 let _cache: { data: SponsorData; at: number } | null = null;
 
 export const DONATION_IDENTITY =
-	"UVYAOYTNYCRBVFBHNFIJUEOUEPEDIDUWWEAXKFSJEBJVASCQEROJOVOEEATL";
+	"SIGILZXQNLOTDENBWIBTOGRNBPLBWISKLZCQQFMEECEKOTNVJMMGRWYALYQL";
 
 const ARCHIVE_URL = "https://rpc.qubic.org/query/v1";
 const PAGE_SIZE = 100;
