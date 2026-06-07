@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
+import { Route as PayRouteImport } from './routes/pay'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BrandRouteImport } from './routes/brand'
@@ -27,6 +28,11 @@ import { Route as DocsPayloadRouteImport } from './routes/docs/payload'
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
   path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayRoute = PayRouteImport.update({
+  id: '/pay',
+  path: '/pay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadRoute = DownloadRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRouteWithChildren
   '/download': typeof DownloadRoute
+  '/pay': typeof PayRoute
   '/sponsors': typeof SponsorsRoute
   '/docs/payload': typeof DocsPayloadRoute
   '/docs/react': typeof DocsReactRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
   '/download': typeof DownloadRoute
+  '/pay': typeof PayRoute
   '/sponsors': typeof SponsorsRoute
   '/docs/payload': typeof DocsPayloadRoute
   '/docs/react': typeof DocsReactRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRouteWithChildren
   '/download': typeof DownloadRoute
+  '/pay': typeof PayRoute
   '/sponsors': typeof SponsorsRoute
   '/docs/payload': typeof DocsPayloadRoute
   '/docs/react': typeof DocsReactRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/docs'
     | '/download'
+    | '/pay'
     | '/sponsors'
     | '/docs/payload'
     | '/docs/react'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/brand'
     | '/download'
+    | '/pay'
     | '/sponsors'
     | '/docs/payload'
     | '/docs/react'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/docs'
     | '/download'
+    | '/pay'
     | '/sponsors'
     | '/docs/payload'
     | '/docs/react'
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   BrandRoute: typeof BrandRoute
   DocsRoute: typeof DocsRouteWithChildren
   DownloadRoute: typeof DownloadRoute
+  PayRoute: typeof PayRoute
   SponsorsRoute: typeof SponsorsRoute
 }
 
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/sponsors'
       fullPath: '/sponsors'
       preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay': {
+      id: '/pay'
+      path: '/pay'
+      fullPath: '/pay'
+      preLoaderRoute: typeof PayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/download': {
@@ -335,6 +355,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandRoute: BrandRoute,
   DocsRoute: DocsRouteWithChildren,
   DownloadRoute: DownloadRoute,
+  PayRoute: PayRoute,
   SponsorsRoute: SponsorsRoute,
 }
 export const routeTree = rootRouteImport

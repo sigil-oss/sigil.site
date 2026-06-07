@@ -1584,3 +1584,56 @@ ul.brief li::after  { content: ']'; color: var(--text-secondary); margin-left: 6
 @media (prefers-color-scheme: dark) {
   .doc-pre .shiki span { color: var(--shiki-dark); }
 }
+
+/* ========== /pay — Payment link landing page ========== */
+.pay-page {
+  min-height: calc(100dvh - 64px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 64px 0;
+}
+.pay-card {
+  max-width: 480px; width: 100%;
+  border: 1px solid var(--border-strong);
+  padding: 40px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+@media (max-width: 560px) {
+  .pay-card { padding: 28px 20px; }
+}
+.pay-eyebrow {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.18em; color: var(--text-disabled);
+}
+.pay-identity {
+  display: flex; align-items: center; gap: 16px;
+}
+.pay-identity-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pay-identity-addr {
+  font-size: 15px; letter-spacing: 0.04em; color: var(--text-display); font-weight: 700;
+}
+.pay-identity-full {
+  font-size: 10px; letter-spacing: 0.04em; color: var(--text-disabled);
+  word-break: break-all; line-height: 1.5;
+}
+.pay-details {
+  display: flex; flex-direction: column; gap: 10px;
+  border: 1px solid var(--border-subtle); padding: 16px;
+}
+.pay-detail-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.pay-detail-key {
+  font-size: 10px; letter-spacing: 0.14em; color: var(--text-disabled); flex-shrink: 0;
+}
+.pay-detail-val {
+  font-size: 14px; color: var(--text-display); text-align: right; font-weight: 500;
+}
+.pay-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.pay-actions .btn { flex: 1; justify-content: center; min-width: 140px; }
+.pay-notice {
+  font-size: 10px; letter-spacing: 0.1em; color: var(--text-disabled);
+  text-align: center;
+}
+.pay-divider { border: none; border-top: 1px solid var(--border-subtle); margin: 0; }
+.pay-install { display: flex; flex-direction: column; gap: 10px; }
+.pay-install-label { font-size: 12px; letter-spacing: 0.1em; color: var(--text-secondary); }
+.pay-install-sub { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.6; }
+.pay-error-msg { font-size: 14px; color: var(--text-secondary); margin: 0; }
