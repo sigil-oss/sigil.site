@@ -139,7 +139,7 @@ export const Route = createFileRoute("/docs/reference")({
 			{ property: "og:url", content: "https://sigilwallet.org/docs/reference" },
 			{
 				property: "og:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 			{
 				name: "twitter:title",
@@ -153,7 +153,7 @@ export const Route = createFileRoute("/docs/reference")({
 			},
 			{
 				name: "twitter:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 		],
 		links: [{ rel: "canonical", href: "https://sigilwallet.org/docs/reference" }],

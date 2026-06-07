@@ -51,7 +51,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 			{
 				property: "og:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 			{ property: "og:image:width", content: "1200" },
 			{ property: "og:image:height", content: "630" },
@@ -68,7 +68,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 			{
 				name: "twitter:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 		],
 		links: [
@@ -112,7 +112,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 						downloadUrl: "https://sigilwallet.org/download",
 						license: "https://github.com/sigil-oss/sigil.app/blob/main/LICENSE",
 						isAccessibleForFree: true,
-						image: "https://sigilwallet.org/og-image-dark.png",
+						image: "https://www.sigilwallet.org/og-image-dark.png",
 					},
 					{
 						"@context": "https://schema.org",

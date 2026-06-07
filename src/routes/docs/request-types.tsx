@@ -108,7 +108,7 @@ export const Route = createFileRoute("/docs/request-types")({
 			},
 			{
 				property: "og:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 			{
 				name: "twitter:title",
@@ -122,7 +122,7 @@ export const Route = createFileRoute("/docs/request-types")({
 			},
 			{
 				name: "twitter:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 		],
 		links: [

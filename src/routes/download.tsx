@@ -33,7 +33,7 @@ export const Route = createFileRoute("/download")({
 			{ property: "og:url", content: "https://sigilwallet.org/download" },
 			{
 				property: "og:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 			{
 				name: "twitter:title",
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/download")({
 			},
 			{
 				name: "twitter:image",
-				content: "https://sigilwallet.org/og-image-dark.png",
+				content: "https://www.sigilwallet.org/og-image-dark.png",
 			},
 		],
 		links: [{ rel: "canonical", href: "https://sigilwallet.org/download" }],
