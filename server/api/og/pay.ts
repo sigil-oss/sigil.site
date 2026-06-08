@@ -1,47 +1,16 @@
 import { defineEventHandler, getQuery } from "h3";
-import { initWasm, Resvg } from "@resvg/resvg-wasm";
-import satori, { type SatoriOptions } from "satori";
+import { render } from "takumi-js";
+import { googleFont, container, text, type ContainerNode, type TextNode } from "@takumi-rs/helpers";
 
-type VNode = {
-	type: string;
-	props: Record<string, unknown> & { children?: VNode | VNode[] | string };
-};
+type Node = ContainerNode | TextNode;
+type FontLoader = { name: string; key: string; weight: number | undefined; style: string | undefined; data: () => Promise<ArrayBuffer> };
 
-function box(
-	style: Record<string, unknown>,
-	children: (VNode | string | false | null | undefined)[] | string,
-): VNode {
-	return {
-		type: "div",
-		props: {
-			style: { display: "flex", ...style },
-			children: Array.isArray(children) ? (children.filter(Boolean) as VNode[]) : children,
-		},
-	};
-}
+let cachedFonts: FontLoader[] | null = null;
 
-function span(style: Record<string, unknown>, content: string): VNode {
-	return { type: "span", props: { style, children: content } };
-}
-
-// Module-level cache
-let wasmInited = false;
-let fontRegular: ArrayBuffer | null = null;
-let fontBold: ArrayBuffer | null = null;
-
-async function ensureWasm() {
-	if (wasmInited) return;
-	await initWasm(fetch("https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/index_bg.wasm"));
-	wasmInited = true;
-}
-
-async function getFonts() {
-	if (fontRegular && fontBold) return;
-	const base = "https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/files/";
-	[fontRegular, fontBold] = await Promise.all([
-		fetch(`${base}jetbrains-mono-latin-400-normal.woff`).then((r) => r.arrayBuffer()),
-		fetch(`${base}jetbrains-mono-latin-700-normal.woff`).then((r) => r.arrayBuffer()),
-	]);
+async function getFonts(): Promise<FontLoader[]> {
+	if (cachedFonts) return cachedFonts;
+	cachedFonts = await googleFont("Space Mono", { weight: [400, 700] });
+	return cachedFonts;
 }
 
 export default defineEventHandler(async (event) => {
@@ -53,82 +22,41 @@ export default defineEventHandler(async (event) => {
 	const isValid = to.length === 60 && /^[A-Z]+$/.test(to);
 	const short = isValid ? `${to.slice(0, 10)}…${to.slice(-8)}` : null;
 	const amtNum = amount ? parseInt(amount, 10) : Number.NaN;
-	const amtLabel =
-		Number.isFinite(amtNum) && amtNum > 0 ? `${amtNum.toLocaleString("en")} QU` : null;
+	const amtLabel = Number.isFinite(amtNum) && amtNum > 0 ? `${amtNum.toLocaleString("en")} QU` : null;
 
-	await Promise.all([ensureWasm(), getFonts()]);
+	const fonts = await getFonts();
 
-	const W = 1200;
-	const H = 630;
-	const ACCENT = "#4ade80";
-	const BG = "#080808";
+	const children: Node[] = [
+		text({ text: "[ SIGIL WALLET ]", tw: "text-[13px] text-[#333333] tracking-[0.28em] uppercase mb-10" }),
+		text({ text: "PAYMENT REQUEST", tw: "text-5xl font-bold text-white tracking-[0.04em] mb-6" }),
+		short
+			? text({ text: short, tw: "text-xl text-[#505050] tracking-[0.06em] mb-10" })
+			: text({ text: "INVALID LINK", tw: "text-xl text-[#3a3a3a] tracking-[0.06em]" }),
+		...(amtLabel
+			? [text({ text: amtLabel, tw: "text-6xl font-bold text-[#4ade80] tracking-[-0.01em] mb-4" })]
+			: []),
+		...(label
+			? [container({
+					tw: "flex items-center",
+					children: [
+						text({ text: "//", tw: "text-[15px] text-[#444444] mr-3" }),
+						text({ text: label, tw: "text-2xl text-[#888888]" }),
+					],
+				})]
+			: []),
+		container({
+			tw: "flex justify-between items-end w-full mt-auto",
+			children: [
+				text({ text: "sigilwallet.org", tw: "text-xs text-[#252525] tracking-[0.18em]" }),
+				text({ text: "QUBIC", tw: "text-xs text-[#252525] tracking-[0.18em]" }),
+			],
+		}),
+	];
 
-	const root = box(
-		{
-			flexDirection: "column",
-			width: "100%",
-			height: "100%",
-			background: BG,
-			padding: "72px 80px 60px",
-			fontFamily: "JetBrains Mono",
-			color: "#e8e8e8",
-		},
-		[
-			// Brand eyebrow
-			span(
-				{ fontSize: 13, color: "#333", letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 40 },
-				"[ SIGIL WALLET ]",
-			),
-			// Main headline
-			span(
-				{ fontSize: 46, fontWeight: 700, color: "#fff", letterSpacing: "0.04em", marginBottom: 24, lineHeight: 1.1 },
-				"PAYMENT REQUEST",
-			),
-			// Address
-			short
-				? span({ fontSize: 20, color: "#505050", letterSpacing: "0.06em", marginBottom: amtLabel || label ? 44 : 0 }, short)
-				: span({ fontSize: 20, color: "#3a3a3a", letterSpacing: "0.06em", marginBottom: 0 }, "INVALID LINK"),
-			// Amount — large accent
-			amtLabel
-				? span({
-						fontSize: 58,
-						fontWeight: 700,
-						color: ACCENT,
-						letterSpacing: "-0.01em",
-						marginBottom: label ? 18 : 0,
-					}, amtLabel)
-				: false,
-			// Label / note
-			label
-				? box({ alignItems: "center" }, [
-						span({ fontSize: 15, color: "#444", marginRight: 10 }, "//"),
-						span({ fontSize: 22, color: "#888" }, label),
-					])
-				: false,
-			// Footer
-			box(
-				{ marginTop: "auto", justifyContent: "space-between", alignItems: "flex-end", width: "100%" },
-				[
-					span({ fontSize: 12, color: "#252525", letterSpacing: "0.18em" }, "sigilwallet.org"),
-					span({ fontSize: 12, color: "#252525", letterSpacing: "0.18em" }, "QUBIC"),
-				],
-			),
-		],
+	const png = await render(
+		container({ tw: "flex flex-col w-full h-full bg-[#080808] px-20 py-16 text-[#e8e8e8]", children }),
+		{ width: 1200, height: 630, fonts },
 	);
-
-	const satoriOpts: SatoriOptions = {
-		width: W,
-		height: H,
-		fonts: [
-			{ name: "JetBrains Mono", data: fontRegular!, weight: 400, style: "normal" },
-			{ name: "JetBrains Mono", data: fontBold!, weight: 700, style: "normal" },
-		],
-	};
-
-	// biome-ignore lint/suspicious/noExplicitAny: satori accepts VNode-shaped objects matching ReactNode structure
-	const svg = await satori(root as any, satoriOpts);
-
-	const png = new Resvg(svg, { fitTo: { mode: "width", value: W } }).render().asPng();
 
 	return new Response(png.buffer as ArrayBuffer, {
 		headers: {

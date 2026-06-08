@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@posthog/react": "^1.9.1",
-    "@resvg/resvg-wasm": "^2.6.2",
     "@tailwindcss/vite": "^4.1.18",
+    "@takumi-rs/helpers": "^1.7.0",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-query": "latest",
     "@tanstack/react-query-devtools": "latest",
@@ -33,9 +33,9 @@
     "posthog-node": "^5.35.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "satori": "^0.26.0",
     "shiki": "^4.1.0",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "takumi-js": "^1.7.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.5",
