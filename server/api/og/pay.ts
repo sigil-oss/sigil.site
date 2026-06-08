@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
 				tw: "flex flex-col",
 				children: amtLabel
 					? [text({ text: amtLabel, tw: "text-[200px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none" })]
-					: [text({ text: "OPEN IN SIGIL", tw: "text-[80px] font-bold text-[#242424] leading-none" })],
+					: [text({ text: "OPEN IN SIGIL", tw: "text-[80px] font-bold text-[#404040] leading-none" })],
 			}),
 			// Label + address stacked
 			container({
@@ -63,8 +63,8 @@ export default defineEventHandler(async (event) => {
 					container({
 						tw: "flex flex-row items-center",
 						children: [
-							container({ style: { width: 6, height: 32, background: "#2a2a2a", marginRight: 24, flexShrink: 0 }, children: [] }),
-							text({ text: short, tw: "text-[30px] text-[#3a3a3a] tracking-[0.06em]" }),
+							container({ style: { width: 6, height: 32, background: "#383838", marginRight: 24, flexShrink: 0 }, children: [] }),
+							text({ text: short, tw: "text-[30px] text-[#545454] tracking-[0.06em]" }),
 						],
 					}),
 				],
@@ -78,13 +78,13 @@ export default defineEventHandler(async (event) => {
 						children: [
 							text({ text: "[", tw: "text-[30px] font-bold text-[#E0479E] tracking-tight" }),
 							container({ style: { width: 12, height: 12, background: "#E0479E", margin: "0 8px" }, children: [] }),
-							text({ text: "] SIGIL", tw: "text-[30px] font-bold text-[#282828] tracking-[0.2em]" }),
+							text({ text: "] SIGIL", tw: "text-[30px] font-bold text-[#484848] tracking-[0.2em]" }),
 						],
 					}),
 					container({
 						tw: "flex flex-row items-center",
 						children: [
-							text({ text: "sigilwallet.org", tw: "text-[24px] text-[#2e2e2e] tracking-[0.08em]" }),
+							text({ text: "sigilwallet.org", tw: "text-[24px] text-[#484848] tracking-[0.08em]" }),
 							text({ text: "/pay", tw: "text-[24px] text-[#E0479E] tracking-[0.08em] font-bold" }),
 						],
 					}),
@@ -97,10 +97,10 @@ export default defineEventHandler(async (event) => {
 	// Vertical thin line + large ghosted "QU" as backdrop element
 	const rightCol = container({
 		tw: "flex flex-col items-center justify-center h-full",
-		style: { width: 840, borderLeft: "2px solid #161616" },
+		style: { width: 840, borderLeft: "2px solid #1a1a1a" },
 		children: [
-			text({ text: "QU", tw: "text-[320px] font-bold text-[#111111] tracking-[-0.06em] leading-none" }),
-			text({ text: "QUBIC NETWORK", tw: "text-[20px] text-[#1a1a1a] tracking-[0.35em] mt-6" }),
+			text({ text: "QU", tw: "text-[320px] font-bold text-[#1d1d1d] tracking-[-0.06em] leading-none" }),
+			text({ text: "QUBIC NETWORK", tw: "text-[20px] text-[#2a2a2a] tracking-[0.35em] mt-6" }),
 		],
 	});
 
