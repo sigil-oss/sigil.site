@@ -7,7 +7,11 @@ import { Identicon } from "#/components/Identicon";
 export const Route = createFileRoute("/pay")({
 	validateSearch: (search: Record<string, unknown>) => ({
 		to: typeof search.to === "string" ? search.to : "",
-		amount: typeof search.amount === "string" ? search.amount : "",
+		// TanStack Router JSON-parses numeric-looking params; handle both types
+		amount:
+			typeof search.amount === "string" || typeof search.amount === "number"
+				? String(search.amount)
+				: "",
 		label: typeof search.label === "string" ? search.label : "",
 	}),
 	head: ({ match }) => {
@@ -23,7 +27,7 @@ export const Route = createFileRoute("/pay")({
 					: "Payment request — Sigil";
 		const description = [
 			label && label,
-			amountLabel && `${amountLabel}`,
+			amountLabel && amountLabel,
 			shortId && `To: ${shortId}`,
 		]
 			.filter(Boolean)
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/pay")({
 		if (amount) ogParams.set("amount", amount);
 		if (label) ogParams.set("label", label);
 		const ogImage = `https://www.sigilwallet.org/api/og/pay?${ogParams.toString()}`;
+		const ogUrl = `https://www.sigilwallet.org/pay?${ogParams.toString()}`;
 
 		return {
 			meta: [
@@ -40,7 +45,7 @@ export const Route = createFileRoute("/pay")({
 				{ name: "description", content: description || "Open this link in Sigil to send QUBIC." },
 				{ property: "og:title", content: title },
 				{ property: "og:description", content: description || "Open this link in Sigil to send QUBIC." },
-				{ property: "og:url", content: `https://sigilwallet.org/pay` },
+				{ property: "og:url", content: ogUrl },
 				{ property: "og:image", content: ogImage },
 				{ property: "og:image:width", content: "1200" },
 				{ property: "og:image:height", content: "630" },
@@ -49,7 +54,7 @@ export const Route = createFileRoute("/pay")({
 				{ name: "twitter:description", content: description || "Open this link in Sigil to send QUBIC." },
 				{ name: "twitter:image", content: ogImage },
 			],
-			links: [{ rel: "canonical", href: "https://www.sigilwallet.org/pay" }],
+			links: [{ rel: "canonical", href: ogUrl }],
 		};
 	},
 	component: PayPage,
@@ -90,7 +95,6 @@ function PayPage() {
 		setTimeout(() => setCopyDone(false), 1500);
 	}
 
-	// Auto-attempt to open Sigil on first load if valid
 	useEffect(() => {
 		if (valid) {
 			const t = setTimeout(() => {
@@ -132,29 +136,22 @@ function PayPage() {
 
 						{/* Identity block */}
 						<div className="pay-identity">
-							<Identicon seed={to} size={56} radius={12} />
+							<Identicon seed={to} size={52} radius={11} />
 							<div className="pay-identity-text">
+								<div className="pay-to-label mono">TO</div>
 								<div className="pay-identity-addr mono">
-									{to.slice(0, 8)}…{to.slice(-8)}
+									{to.slice(0, 10)}…{to.slice(-8)}
 								</div>
 								<div className="pay-identity-full mono">{to}</div>
 							</div>
 						</div>
 
-						{/* Amount + label */}
-						{(formattedAmount || label) && (
-							<div className="pay-details">
+						{/* Label + amount hero */}
+						{(label || formattedAmount) && (
+							<div className="pay-hero">
+								{label && <div className="pay-label-text">{label}</div>}
 								{formattedAmount && (
-									<div className="pay-detail-row">
-										<span className="pay-detail-key mono">AMOUNT</span>
-										<span className="pay-detail-val">{formattedAmount}</span>
-									</div>
-								)}
-								{label && (
-									<div className="pay-detail-row">
-										<span className="pay-detail-key mono">NOTE</span>
-										<span className="pay-detail-val">{label}</span>
-									</div>
+									<div className="pay-amount">{formattedAmount}</div>
 								)}
 							</div>
 						)}
