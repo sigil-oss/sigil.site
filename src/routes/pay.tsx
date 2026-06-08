@@ -22,12 +22,12 @@ export const Route = createFileRoute("/pay")({
 					? `Payment request to ${shortId} — Sigil`
 					: "Payment request — Sigil";
 		const description = [
-			label && `"${label}"`,
-			amountLabel && `Amount: ${amountLabel}`,
+			label && label,
+			amountLabel && `${amountLabel}`,
 			shortId && `To: ${shortId}`,
 		]
 			.filter(Boolean)
-			.join(" · ");
+			.join(" — ");
 
 		const ogParams = new URLSearchParams({ to });
 		if (amount) ogParams.set("amount", amount);
