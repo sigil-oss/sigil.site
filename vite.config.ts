@@ -39,7 +39,7 @@ const config = defineConfig({
 			outdir: "./src/paraglide",
 			strategy: ["url", "baseLocale"],
 		}),
-		nitro({ serverDir: "server", rollupConfig: { external: [/^@sentry\//, /^@resvg\//] } }),
+		nitro({ serverDir: "server", rollupConfig: { external: [/^@sentry\//] } }),
 		tailwindcss(),
 		tanstackStart(),
 		viteReact(),
