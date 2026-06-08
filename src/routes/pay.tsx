@@ -146,15 +146,38 @@ function PayPage() {
 							</div>
 						</div>
 
-						{/* Label + amount hero */}
-						{(label || formattedAmount) && (
+						{/* Amount hero */}
+						{formattedAmount && (
 							<div className="pay-hero">
-								{label && <div className="pay-label-text">{label}</div>}
-								{formattedAmount && (
-									<div className="pay-amount">{formattedAmount}</div>
-								)}
+								<div className="pay-amount">{formattedAmount}</div>
 							</div>
 						)}
+
+						{/* Receipt details */}
+						<div className="pay-meta">
+							<div className="pay-meta-row">
+								<span className="pay-meta-key">NETWORK</span>
+								<span className="pay-meta-val">QUBIC</span>
+							</div>
+							<div className="pay-meta-row">
+								<span className="pay-meta-key">TO</span>
+								<span className="pay-meta-val mono" style={{ fontSize: 11, letterSpacing: "0.04em" }}>
+									{to.slice(0, 12)}…{to.slice(-10)}
+								</span>
+							</div>
+							{formattedAmount && (
+								<div className="pay-meta-row">
+									<span className="pay-meta-key">AMOUNT</span>
+									<span className="pay-meta-val">{formattedAmount}</span>
+								</div>
+							)}
+							{label && (
+								<div className="pay-meta-row">
+									<span className="pay-meta-key">NOTE</span>
+									<span className="pay-meta-val">{label}</span>
+								</div>
+							)}
+						</div>
 
 						{/* CTA */}
 						<div className="pay-actions">

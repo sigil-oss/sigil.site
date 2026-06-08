@@ -1633,8 +1633,26 @@ ul.brief li::after  { content: ']'; color: var(--text-secondary); margin-left: 6
 @media (max-width: 420px) {
   .pay-amount { font-size: 36px; }
 }
-.pay-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.pay-actions .btn { flex: 1; justify-content: center; min-width: 140px; }
+.pay-meta {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--border-subtle);
+}
+.pay-meta-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 10px 14px; gap: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pay-meta-row:last-child { border-bottom: none; }
+.pay-meta-key {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 0.2em; color: var(--text-disabled); flex-shrink: 0;
+}
+.pay-meta-val {
+  font-size: 13px; color: var(--text-primary); font-weight: 500;
+  text-align: right; word-break: break-all; max-width: 260px;
+}
+.pay-actions { display: flex; flex-direction: column; gap: 8px; }
+.pay-actions .btn { justify-content: center; padding: 12px 20px; border-radius: 6px; }
 .pay-notice {
   font-size: 10px; letter-spacing: 0.1em; color: var(--text-disabled);
   text-align: center;
