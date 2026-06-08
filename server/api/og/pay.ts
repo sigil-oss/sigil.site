@@ -12,14 +12,17 @@ async function getFonts(): Promise<FontLoader[]> {
 	return cachedFonts;
 }
 
+const HR = (color = "#202020") =>
+	container({ tw: `w-full`, style: { height: 3, background: color, flexShrink: 0 }, children: [] });
+
 export default defineEventHandler(async (event) => {
 	const q = getQuery(event);
 	const to = typeof q.to === "string" ? q.to.toUpperCase() : "";
 	const amount = typeof q.amount === "string" ? q.amount : "";
-	const label = typeof q.label === "string" ? q.label.slice(0, 50) : "";
+	const label = typeof q.label === "string" ? q.label.slice(0, 44) : "";
 
 	const isValid = to.length === 60 && /^[A-Z]+$/.test(to);
-	const short = isValid ? `${to.slice(0, 14)}…${to.slice(-12)}` : null;
+	const short = isValid ? `${to.slice(0, 14)}…${to.slice(-12)}` : "INVALID LINK";
 	const amtNum = amount ? parseInt(amount, 10) : Number.NaN;
 	const amtLabel = Number.isFinite(amtNum) && amtNum > 0 ? `${amtNum.toLocaleString("en")} QU` : null;
 
@@ -27,97 +30,71 @@ export default defineEventHandler(async (event) => {
 	const W = 2400;
 	const H = 1260;
 
-	// ── Top bar ──────────────────────────────────────────────────────────────
-	const topBar = container({
-		tw: "flex flex-col w-full",
-		children: [
-			container({
-				tw: "flex flex-row items-center justify-between w-full mb-10",
-				children: [
-					text({ text: "[ PAYMENT REQUEST ]", tw: "text-[28px] text-[#E0479E] tracking-[0.22em] font-bold" }),
-					container({
-						tw: "flex flex-row items-center",
-						children: [
-							text({ text: "[", tw: "text-[28px] font-bold text-[#E0479E] tracking-tight" }),
-							container({ tw: "w-3 h-3 bg-[#E0479E] mx-2", children: [] }),
-							text({ text: "] SIGIL", tw: "text-[28px] font-bold text-[#2a2a2a] tracking-[0.2em]" }),
-						],
-					}),
-				],
-			}),
-			// Separator
-			container({ tw: "w-full h-px bg-[#1c1c1c]", children: [] }),
-		],
-	});
-
-	// ── Main block ───────────────────────────────────────────────────────────
-	const mainBlock = container({
-		tw: "flex flex-col",
-		children: [
-			// Amount — giant, fills most of width
-			...(amtLabel
-				? [text({ text: amtLabel, tw: "text-[196px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none mb-6" })]
-				: [text({ text: "OPEN IN SIGIL", tw: "text-[96px] font-bold text-[#242424] tracking-[0.04em] leading-none mb-6" })]),
-			// Label
-			...(label
-				? [container({
-						tw: "flex flex-row items-center mb-6",
-						children: [
-							container({ tw: "w-3 h-10 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
-							text({ text: label, tw: "text-[50px] text-[#787878] tracking-[0.01em]" }),
-						],
-					})]
-				: []),
-			// Address
-			...(short
-				? [container({
-						tw: "flex flex-row items-center",
-						children: [
-							container({ tw: "w-3 h-8 bg-[#242424] mr-8 flex-shrink-0", children: [] }),
-							text({ text: short, tw: "text-[32px] text-[#3e3e3e] tracking-[0.06em]" }),
-						],
-					})]
-				: []),
-		],
-	});
-
-	// ── Bottom bar ───────────────────────────────────────────────────────────
-	const bottomBar = container({
+	// Row 1 — header
+	const header = container({
 		tw: "flex flex-row items-center justify-between w-full",
 		children: [
+			text({ text: "PAYMENT REQUEST", tw: "text-[26px] text-[#E0479E] tracking-[0.3em] font-bold" }),
 			container({
 				tw: "flex flex-row items-center",
 				children: [
-					container({
-						tw: "flex flex-row items-center mr-12",
+					text({ text: "[", tw: "text-[26px] font-bold text-[#E0479E] tracking-tight" }),
+					container({ tw: "w-3 h-3 bg-[#E0479E] mx-2 flex-shrink-0", children: [] }),
+					text({ text: "] SIGIL", tw: "text-[26px] font-bold text-[#2a2a2a] tracking-[0.25em]" }),
+				],
+			}),
+		],
+	});
+
+	// Row 2 — amount (giant, fills width)
+	const amountRow = container({
+		tw: "flex flex-col w-full",
+		children: amtLabel
+			? [text({ text: amtLabel, tw: "text-[220px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none" })]
+			: [text({ text: "OPEN IN SIGIL", tw: "text-[100px] font-bold text-[#242424] tracking-[0.04em] leading-none" })],
+	});
+
+	// Row 3 — label + address on same line
+	const metaRow = container({
+		tw: "flex flex-row items-center justify-between w-full",
+		children: [
+			...(label
+				? [container({
+						tw: "flex flex-row items-center",
 						children: [
-							text({ text: "[", tw: "text-[34px] font-bold text-[#E0479E] tracking-tight" }),
-							container({ tw: "w-4 h-4 bg-[#E0479E] mx-2", children: [] }),
-							text({ text: "]", tw: "text-[34px] font-bold text-[#E0479E] tracking-tight" }),
+							container({ tw: "w-3 h-10 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
+							text({ text: label, tw: "text-[44px] text-[#686868] tracking-[0.01em]" }),
 						],
-					}),
-					text({ text: "SIGIL WALLET", tw: "text-[26px] font-bold text-[#303030] tracking-[0.28em]" }),
-				],
-			}),
-			container({
-				tw: "flex flex-row items-center",
-				children: [
-					text({ text: "sigilwallet.org", tw: "text-[26px] text-[#2e2e2e] tracking-[0.08em]" }),
-					text({ text: " /pay", tw: "text-[26px] text-[#E0479E] tracking-[0.08em] font-bold" }),
-				],
-			}),
+					})]
+				: [container({ tw: "flex", children: [] })]),
+			text({ text: short, tw: "text-[28px] text-[#383838] tracking-[0.06em]" }),
+		],
+	});
+
+	// Row 4 — footer
+	const footer = container({
+		tw: "flex flex-row items-center justify-between w-full",
+		children: [
+			text({ text: "sigilwallet.org/pay", tw: "text-[24px] text-[#2a2a2a] tracking-[0.12em]" }),
+			text({ text: "QUBIC NETWORK", tw: "text-[22px] text-[#222222] tracking-[0.3em]" }),
 		],
 	});
 
 	const root = container({
 		tw: "flex flex-row w-full h-full bg-[#080808]",
 		children: [
-			// Left magenta accent bar
 			container({ tw: "w-8 h-full bg-[#E0479E] flex-shrink-0", children: [] }),
-			// Main content
 			container({
-				tw: "flex flex-col flex-1 h-full justify-between px-80 pt-52 pb-52",
-				children: [topBar, mainBlock, bottomBar],
+				tw: "flex flex-col flex-1 h-full justify-between px-72 pt-48 pb-48",
+				children: [
+					header,
+					HR("#E0479E"),  // hot rule under header
+					amountRow,
+					HR(),           // rule under amount
+					metaRow,
+					HR(),           // rule above footer
+					footer,
+				],
 			}),
 		],
 	});
