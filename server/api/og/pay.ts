@@ -24,80 +24,76 @@ export default defineEventHandler(async (event) => {
 	const amtLabel = Number.isFinite(amtNum) && amtNum > 0 ? `${amtNum.toLocaleString("en")} QU` : null;
 
 	const fonts = await getFonts();
-
-	// Render at 2× for crispness — og:image:width/height meta stays 1200×630
 	const W = 2400;
 	const H = 1260;
 
-	// Left panel: identity + branding
-	const leftPanel = container({
-		tw: "flex flex-col justify-between h-full",
+	// ── Top bar ─────────────────────────────────────────────────────────────
+	const topBar = container({
+		tw: "flex flex-row items-center justify-between w-full",
 		children: [
-			// Top block
-			container({
-				tw: "flex flex-col",
-				children: [
-					text({ text: "PAYMENT REQUEST", tw: "text-[26px] text-[#E0479E] tracking-[0.3em] font-bold mb-12" }),
-					// Address row
-					container({
-						tw: "flex flex-row items-center mb-6",
+			text({ text: "[ PAYMENT REQUEST ]", tw: "text-[30px] text-[#E0479E] tracking-[0.25em] font-bold" }),
+			text({ text: "SIGIL", tw: "text-[30px] text-[#2e2e2e] tracking-[0.35em] font-bold" }),
+		],
+	});
+
+	// ── Main block (amount or fallback) + address ────────────────────────────
+	const mainBlock = container({
+		tw: "flex flex-col",
+		children: [
+			// Amount — giant
+			...(amtLabel
+				? [text({ text: amtLabel, tw: "text-[172px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none" })]
+				: [text({ text: "OPEN IN SIGIL →", tw: "text-[80px] font-bold text-[#2e2e2e] tracking-[0.04em] leading-none" })]),
+			// Label
+			...(label
+				? [container({
+						tw: "flex flex-row items-center mt-10",
 						children: [
-							container({ tw: "w-4 h-12 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
-							text({
-								text: short ?? "INVALID LINK",
-								tw: `text-[30px] tracking-[0.05em] ${short ? "text-[#4a4a4a]" : "text-[#2a2a2a]"}`,
-							}),
+							container({ tw: "w-3 h-9 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
+							text({ text: label, tw: "text-[46px] text-[#707070] tracking-[0.02em]" }),
 						],
-					}),
-					...(label
-						? [text({ text: `"${label}"`, tw: "text-[36px] text-[#666666] mt-4 tracking-[0.02em]" })]
-						: []),
-				],
-			}),
-			// Bottom branding
+					})]
+				: []),
+			// Address
 			container({
-				tw: "flex flex-row items-center",
+				tw: "flex flex-row items-center mt-8",
 				children: [
-					text({ text: "[", tw: "text-[40px] font-bold text-[#E0479E] mr-2 tracking-tight" }),
-					container({ tw: "w-3 h-3 bg-[#E0479E] mx-2", children: [] }),
-					text({ text: "]", tw: "text-[40px] font-bold text-[#E0479E] ml-2 mr-8 tracking-tight" }),
-					text({ text: "SIGIL", tw: "text-[28px] font-bold text-[#303030] tracking-[0.3em]" }),
+					container({ tw: "w-3 h-7 bg-[#282828] mr-8 flex-shrink-0", children: [] }),
+					text({
+						text: short ?? "INVALID LINK",
+						tw: `text-[30px] tracking-[0.06em] ${short ? "text-[#353535]" : "text-[#252525]"}`,
+					}),
 				],
 			}),
 		],
 	});
 
-	// Right panel: amount (or placeholder)
-	const rightPanel = container({
-		tw: "flex flex-col items-end justify-center h-full",
-		children: amtLabel
-			? [
-					text({ text: amtLabel.replace(" QU", ""), tw: "text-[160px] font-bold text-[#4ade80] leading-none tracking-[-0.04em] text-right" }),
-					text({ text: "QU", tw: "text-[72px] font-bold text-[#2a5e3a] tracking-[0.1em] text-right mt-4" }),
-				]
-			: [
-					text({ text: "OPEN IN", tw: "text-[36px] text-[#2a2a2a] tracking-[0.2em] text-right" }),
-					text({ text: "SIGIL", tw: "text-[96px] font-bold text-[#2a2a2a] tracking-[0.05em] text-right" }),
+	// ── Bottom bar ───────────────────────────────────────────────────────────
+	const bottomBar = container({
+		tw: "flex flex-row items-center justify-between w-full pt-16 border-t border-[#161616]",
+		children: [
+			container({
+				tw: "flex flex-row items-center",
+				children: [
+					text({ text: "[", tw: "text-[36px] font-bold text-[#E0479E] tracking-[-0.05em]" }),
+					container({ tw: "w-4 h-4 bg-[#E0479E] mx-3", children: [] }),
+					text({ text: "]", tw: "text-[36px] font-bold text-[#E0479E] mr-10 tracking-[-0.05em]" }),
+					text({ text: "SIGIL WALLET", tw: "text-[26px] font-bold text-[#2a2a2a] tracking-[0.25em]" }),
 				],
+			}),
+			text({ text: "sigilwallet.org/pay", tw: "text-[26px] text-[#252525] tracking-[0.1em]" }),
+		],
 	});
 
 	const root = container({
 		tw: "flex flex-row w-full h-full bg-[#080808]",
 		children: [
 			// Left magenta accent bar
-			container({ tw: "w-6 h-full bg-[#E0479E] flex-shrink-0", children: [] }),
-			// Left content panel
+			container({ tw: "w-8 h-full bg-[#E0479E] flex-shrink-0", children: [] }),
+			// Main content — justify-between distributes top/main/bottom across full height
 			container({
-				tw: "flex flex-col flex-1 px-36 py-28",
-				children: [leftPanel],
-			}),
-			// Vertical divider
-			container({ tw: "w-px h-full bg-[#181818] flex-shrink-0", children: [] }),
-			// Right amount panel
-			container({
-				tw: "flex flex-col px-36 py-28",
-				style: { width: 880 },
-				children: [rightPanel],
+				tw: "flex flex-col flex-1 justify-between px-80 pt-56 pb-56",
+				children: [topBar, mainBlock, bottomBar],
 			}),
 		],
 	});
