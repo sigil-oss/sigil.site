@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-import { readFileSync } from "node:fs";
 import { defineEventHandler, getQuery } from "h3";
 import { initWasm, Resvg } from "@resvg/resvg-wasm";
 import satori, { type SatoriOptions } from "satori";
@@ -33,9 +31,7 @@ let fontBold: ArrayBuffer | null = null;
 
 async function ensureWasm() {
 	if (wasmInited) return;
-	const require = createRequire(import.meta.url);
-	const wasmPath = require.resolve("@resvg/resvg-wasm/index_bg.wasm");
-	await initWasm(readFileSync(wasmPath));
+	await initWasm(fetch("https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/index_bg.wasm"));
 	wasmInited = true;
 }
 
