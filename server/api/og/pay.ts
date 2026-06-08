@@ -90,9 +90,9 @@ export default defineEventHandler(async (event) => {
 		children: [
 			// Left magenta accent bar
 			container({ tw: "w-8 h-full bg-[#E0479E] flex-shrink-0", children: [] }),
-			// Main content — justify-between distributes top/main/bottom across full height
+			// Main content — h-full + justify-between distributes top/main/bottom across full height
 			container({
-				tw: "flex flex-col flex-1 justify-between px-80 pt-56 pb-56",
+				tw: "flex flex-col flex-1 h-full justify-between px-80 pt-56 pb-56",
 				children: [topBar, mainBlock, bottomBar],
 			}),
 		],
