@@ -12,9 +12,6 @@ async function getFonts(): Promise<FontLoader[]> {
 	return cachedFonts;
 }
 
-const HR = (color = "#202020") =>
-	container({ tw: `w-full`, style: { height: 3, background: color, flexShrink: 0 }, children: [] });
-
 export default defineEventHandler(async (event) => {
 	const q = getQuery(event);
 	const to = typeof q.to === "string" ? q.to.toUpperCase() : "";
@@ -30,72 +27,90 @@ export default defineEventHandler(async (event) => {
 	const W = 2400;
 	const H = 1260;
 
-	// Row 1 — header
-	const header = container({
-		tw: "flex flex-row items-center justify-between w-full",
+	// ── Left column: all content ─────────────────────────────────────────────
+	const leftCol = container({
+		tw: "flex flex-col h-full justify-between py-52",
+		style: { width: 1480, paddingLeft: 72, paddingRight: 64 },
 		children: [
-			text({ text: "PAYMENT REQUEST", tw: "text-[26px] text-[#E0479E] tracking-[0.3em] font-bold" }),
+			// Header
 			container({
-				tw: "flex flex-row items-center",
+				tw: "flex flex-col",
 				children: [
-					text({ text: "[", tw: "text-[26px] font-bold text-[#E0479E] tracking-tight" }),
-					container({ tw: "w-3 h-3 bg-[#E0479E] mx-2 flex-shrink-0", children: [] }),
-					text({ text: "] SIGIL", tw: "text-[26px] font-bold text-[#2a2a2a] tracking-[0.25em]" }),
+					text({ text: "PAYMENT REQUEST", tw: "text-[26px] text-[#E0479E] tracking-[0.3em] font-bold mb-8" }),
+					container({ style: { width: "100%", height: 2, background: "#E0479E" }, children: [] }),
+				],
+			}),
+			// Amount
+			container({
+				tw: "flex flex-col",
+				children: amtLabel
+					? [text({ text: amtLabel, tw: "text-[200px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none" })]
+					: [text({ text: "OPEN IN SIGIL", tw: "text-[80px] font-bold text-[#242424] leading-none" })],
+			}),
+			// Label + address stacked
+			container({
+				tw: "flex flex-col",
+				children: [
+					...(label
+						? [container({
+								tw: "flex flex-row items-center mb-6",
+								children: [
+									container({ style: { width: 6, height: 44, background: "#E0479E", marginRight: 24, flexShrink: 0 }, children: [] }),
+									text({ text: label, tw: "text-[44px] text-[#686868] tracking-[0.01em]" }),
+								],
+							})]
+						: []),
+					container({
+						tw: "flex flex-row items-center",
+						children: [
+							container({ style: { width: 6, height: 32, background: "#2a2a2a", marginRight: 24, flexShrink: 0 }, children: [] }),
+							text({ text: short, tw: "text-[30px] text-[#3a3a3a] tracking-[0.06em]" }),
+						],
+					}),
+				],
+			}),
+			// Footer
+			container({
+				tw: "flex flex-row items-center justify-between",
+				children: [
+					container({
+						tw: "flex flex-row items-center",
+						children: [
+							text({ text: "[", tw: "text-[30px] font-bold text-[#E0479E] tracking-tight" }),
+							container({ style: { width: 12, height: 12, background: "#E0479E", margin: "0 8px" }, children: [] }),
+							text({ text: "] SIGIL", tw: "text-[30px] font-bold text-[#282828] tracking-[0.2em]" }),
+						],
+					}),
+					container({
+						tw: "flex flex-row items-center",
+						children: [
+							text({ text: "sigilwallet.org", tw: "text-[24px] text-[#2e2e2e] tracking-[0.08em]" }),
+							text({ text: "/pay", tw: "text-[24px] text-[#E0479E] tracking-[0.08em] font-bold" }),
+						],
+					}),
 				],
 			}),
 		],
 	});
 
-	// Row 2 — amount (giant, fills width)
-	const amountRow = container({
-		tw: "flex flex-col w-full",
-		children: amtLabel
-			? [text({ text: amtLabel, tw: "text-[220px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none" })]
-			: [text({ text: "OPEN IN SIGIL", tw: "text-[100px] font-bold text-[#242424] tracking-[0.04em] leading-none" })],
-	});
-
-	// Row 3 — label + address on same line
-	const metaRow = container({
-		tw: "flex flex-row items-center justify-between w-full",
+	// ── Right column: decorative ─────────────────────────────────────────────
+	// Vertical thin line + large ghosted "QU" as backdrop element
+	const rightCol = container({
+		tw: "flex flex-col items-center justify-center h-full",
+		style: { width: 840, borderLeft: "2px solid #161616" },
 		children: [
-			...(label
-				? [container({
-						tw: "flex flex-row items-center",
-						children: [
-							container({ tw: "w-3 h-10 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
-							text({ text: label, tw: "text-[44px] text-[#686868] tracking-[0.01em]" }),
-						],
-					})]
-				: [container({ tw: "flex", children: [] })]),
-			text({ text: short, tw: "text-[28px] text-[#383838] tracking-[0.06em]" }),
-		],
-	});
-
-	// Row 4 — footer
-	const footer = container({
-		tw: "flex flex-row items-center justify-between w-full",
-		children: [
-			text({ text: "sigilwallet.org/pay", tw: "text-[24px] text-[#2a2a2a] tracking-[0.12em]" }),
-			text({ text: "QUBIC NETWORK", tw: "text-[22px] text-[#222222] tracking-[0.3em]" }),
+			text({ text: "QU", tw: "text-[320px] font-bold text-[#111111] tracking-[-0.06em] leading-none" }),
+			text({ text: "QUBIC NETWORK", tw: "text-[20px] text-[#1a1a1a] tracking-[0.35em] mt-6" }),
 		],
 	});
 
 	const root = container({
 		tw: "flex flex-row w-full h-full bg-[#080808]",
 		children: [
-			container({ tw: "w-8 h-full bg-[#E0479E] flex-shrink-0", children: [] }),
-			container({
-				tw: "flex flex-col flex-1 h-full justify-between px-72 pt-48 pb-48",
-				children: [
-					header,
-					HR("#E0479E"),  // hot rule under header
-					amountRow,
-					HR(),           // rule under amount
-					metaRow,
-					HR(),           // rule above footer
-					footer,
-				],
-			}),
+			// Left accent bar
+			container({ style: { width: 8, height: "100%", background: "#E0479E", flexShrink: 0 }, children: [] }),
+			leftCol,
+			rightCol,
 		],
 	});
 
