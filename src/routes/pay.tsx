@@ -29,6 +29,11 @@ export const Route = createFileRoute("/pay")({
 			.filter(Boolean)
 			.join(" · ");
 
+		const ogParams = new URLSearchParams({ to });
+		if (amount) ogParams.set("amount", amount);
+		if (label) ogParams.set("label", label);
+		const ogImage = `https://www.sigilwallet.org/api/og/pay?${ogParams.toString()}`;
+
 		return {
 			meta: [
 				{ title },
@@ -36,11 +41,13 @@ export const Route = createFileRoute("/pay")({
 				{ property: "og:title", content: title },
 				{ property: "og:description", content: description || "Open this link in Sigil to send QUBIC." },
 				{ property: "og:url", content: `https://sigilwallet.org/pay` },
-				{ property: "og:image", content: "https://www.sigilwallet.org/og-image-dark.png" },
+				{ property: "og:image", content: ogImage },
+				{ property: "og:image:width", content: "1200" },
+				{ property: "og:image:height", content: "630" },
 				{ name: "twitter:card", content: "summary_large_image" },
 				{ name: "twitter:title", content: title },
 				{ name: "twitter:description", content: description || "Open this link in Sigil to send QUBIC." },
-				{ name: "twitter:image", content: "https://www.sigilwallet.org/og-image-dark.png" },
+				{ name: "twitter:image", content: ogImage },
 			],
 			links: [{ rel: "canonical", href: "https://www.sigilwallet.org/pay" }],
 		};
