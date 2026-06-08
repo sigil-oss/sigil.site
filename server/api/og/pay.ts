@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
 	const label = typeof q.label === "string" ? q.label.slice(0, 50) : "";
 
 	const isValid = to.length === 60 && /^[A-Z]+$/.test(to);
-	const short = isValid ? `${to.slice(0, 12)}…${to.slice(-10)}` : null;
+	const short = isValid ? `${to.slice(0, 14)}…${to.slice(-12)}` : null;
 	const amtNum = amount ? parseInt(amount, 10) : Number.NaN;
 	const amtLabel = Number.isFinite(amtNum) && amtNum > 0 ? `${amtNum.toLocaleString("en")} QU` : null;
 
@@ -27,61 +27,85 @@ export default defineEventHandler(async (event) => {
 	const W = 2400;
 	const H = 1260;
 
-	// ── Top bar ─────────────────────────────────────────────────────────────
+	// ── Top bar ──────────────────────────────────────────────────────────────
 	const topBar = container({
-		tw: "flex flex-row items-center justify-between w-full",
+		tw: "flex flex-col w-full",
 		children: [
-			text({ text: "[ PAYMENT REQUEST ]", tw: "text-[30px] text-[#E0479E] tracking-[0.25em] font-bold" }),
-			text({ text: "SIGIL", tw: "text-[30px] text-[#2e2e2e] tracking-[0.35em] font-bold" }),
+			container({
+				tw: "flex flex-row items-center justify-between w-full mb-10",
+				children: [
+					text({ text: "[ PAYMENT REQUEST ]", tw: "text-[28px] text-[#E0479E] tracking-[0.22em] font-bold" }),
+					container({
+						tw: "flex flex-row items-center",
+						children: [
+							text({ text: "[", tw: "text-[28px] font-bold text-[#E0479E] tracking-tight" }),
+							container({ tw: "w-3 h-3 bg-[#E0479E] mx-2", children: [] }),
+							text({ text: "] SIGIL", tw: "text-[28px] font-bold text-[#2a2a2a] tracking-[0.2em]" }),
+						],
+					}),
+				],
+			}),
+			// Separator
+			container({ tw: "w-full h-px bg-[#1c1c1c]", children: [] }),
 		],
 	});
 
-	// ── Main block (amount or fallback) + address ────────────────────────────
+	// ── Main block ───────────────────────────────────────────────────────────
 	const mainBlock = container({
 		tw: "flex flex-col",
 		children: [
-			// Amount — giant
+			// Amount — giant, fills most of width
 			...(amtLabel
-				? [text({ text: amtLabel, tw: "text-[172px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none" })]
-				: [text({ text: "OPEN IN SIGIL →", tw: "text-[80px] font-bold text-[#2e2e2e] tracking-[0.04em] leading-none" })]),
+				? [text({ text: amtLabel, tw: "text-[196px] font-bold text-[#4ade80] tracking-[-0.04em] leading-none mb-6" })]
+				: [text({ text: "OPEN IN SIGIL", tw: "text-[96px] font-bold text-[#242424] tracking-[0.04em] leading-none mb-6" })]),
 			// Label
 			...(label
 				? [container({
-						tw: "flex flex-row items-center mt-10",
+						tw: "flex flex-row items-center mb-6",
 						children: [
-							container({ tw: "w-3 h-9 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
-							text({ text: label, tw: "text-[46px] text-[#707070] tracking-[0.02em]" }),
+							container({ tw: "w-3 h-10 bg-[#E0479E] mr-8 flex-shrink-0", children: [] }),
+							text({ text: label, tw: "text-[50px] text-[#787878] tracking-[0.01em]" }),
 						],
 					})]
 				: []),
 			// Address
-			container({
-				tw: "flex flex-row items-center mt-8",
-				children: [
-					container({ tw: "w-3 h-7 bg-[#282828] mr-8 flex-shrink-0", children: [] }),
-					text({
-						text: short ?? "INVALID LINK",
-						tw: `text-[30px] tracking-[0.06em] ${short ? "text-[#353535]" : "text-[#252525]"}`,
-					}),
-				],
-			}),
+			...(short
+				? [container({
+						tw: "flex flex-row items-center",
+						children: [
+							container({ tw: "w-3 h-8 bg-[#242424] mr-8 flex-shrink-0", children: [] }),
+							text({ text: short, tw: "text-[32px] text-[#3e3e3e] tracking-[0.06em]" }),
+						],
+					})]
+				: []),
 		],
 	});
 
 	// ── Bottom bar ───────────────────────────────────────────────────────────
 	const bottomBar = container({
-		tw: "flex flex-row items-center justify-between w-full pt-16 border-t border-[#161616]",
+		tw: "flex flex-row items-center justify-between w-full",
 		children: [
 			container({
 				tw: "flex flex-row items-center",
 				children: [
-					text({ text: "[", tw: "text-[36px] font-bold text-[#E0479E] tracking-[-0.05em]" }),
-					container({ tw: "w-4 h-4 bg-[#E0479E] mx-3", children: [] }),
-					text({ text: "]", tw: "text-[36px] font-bold text-[#E0479E] mr-10 tracking-[-0.05em]" }),
-					text({ text: "SIGIL WALLET", tw: "text-[26px] font-bold text-[#2a2a2a] tracking-[0.25em]" }),
+					container({
+						tw: "flex flex-row items-center mr-12",
+						children: [
+							text({ text: "[", tw: "text-[34px] font-bold text-[#E0479E] tracking-tight" }),
+							container({ tw: "w-4 h-4 bg-[#E0479E] mx-2", children: [] }),
+							text({ text: "]", tw: "text-[34px] font-bold text-[#E0479E] tracking-tight" }),
+						],
+					}),
+					text({ text: "SIGIL WALLET", tw: "text-[26px] font-bold text-[#303030] tracking-[0.28em]" }),
 				],
 			}),
-			text({ text: "sigilwallet.org/pay", tw: "text-[26px] text-[#252525] tracking-[0.1em]" }),
+			container({
+				tw: "flex flex-row items-center",
+				children: [
+					text({ text: "sigilwallet.org", tw: "text-[26px] text-[#2e2e2e] tracking-[0.08em]" }),
+					text({ text: " /pay", tw: "text-[26px] text-[#E0479E] tracking-[0.08em] font-bold" }),
+				],
+			}),
 		],
 	});
 
@@ -90,9 +114,9 @@ export default defineEventHandler(async (event) => {
 		children: [
 			// Left magenta accent bar
 			container({ tw: "w-8 h-full bg-[#E0479E] flex-shrink-0", children: [] }),
-			// Main content — h-full + justify-between distributes top/main/bottom across full height
+			// Main content
 			container({
-				tw: "flex flex-col flex-1 h-full justify-between px-80 pt-56 pb-56",
+				tw: "flex flex-col flex-1 h-full justify-between px-80 pt-52 pb-52",
 				children: [topBar, mainBlock, bottomBar],
 			}),
 		],
